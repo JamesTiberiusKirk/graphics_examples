@@ -1,0 +1,4 @@
+C:/Users/dumit/Documents/topic_1_first_programs/include/glm/out/build/x64-Debug (default)/CMakeFiles/edit_cache.dir
+C:/Users/dumit/Documents/topic_1_first_programs/include/glm/out/build/x64-Debug (default)/CMakeFiles/glm_static.dir
+C:/Users/dumit/Documents/topic_1_first_programs/include/glm/out/build/x64-Debug (default)/CMakeFiles/glm_shared.dir
+C:/Users/dumit/Documents/topic_1_first_programs/include/glm/out/build/x64-Debug (default)/CMakeFiles/rebuild_cache.dir
