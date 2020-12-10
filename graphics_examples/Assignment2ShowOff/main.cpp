@@ -69,7 +69,15 @@ GLfloat y_rotation, y_rotation_inc = 0;
 TinyObjLoader obj;
 Cube cube;
 Texture bark;
-Terrain terrain;
+Terrain* terrain;
+
+void initTerrain()
+{
+	terrain = new Terrain(3.0f, 1.0f, 6.0f);
+	terrain->createTerrain(600.f, 600.f, 12.f, 12.f);
+	terrain->setColour(glm::vec3(0, 1, 1));
+	terrain->createObject();
+}
 
 /* Function that first sets up the scene. */
 void init(GLWrapper* glw)
@@ -98,7 +106,8 @@ void init(GLWrapper* glw)
 	viewId = glGetUniformLocation(program, "view");
 	projectionId = glGetUniformLocation(program, "projection");
 	
-	terrain.initTerrain();
+	// For creating terrain
+	initTerrain();
 
 	//cube.makeCube();
 
@@ -175,8 +184,10 @@ void draw() {
 	//model.top() = glm::rotate(model.top(), glm::radians(20.0f), glm::vec3(1,0,0));
 	glUniformMatrix4fv(modelId, 1, GL_FALSE, &model.top()[0][0]);
 
-	terrain.drawTerrain(drawmode);
 	
+	// For drawing terrain
+	terrain->drawObject(drawmode);
+
 	bark.bindTexture();
 	//cube.drawCube(0);
 	obj.drawObject(drawmode);

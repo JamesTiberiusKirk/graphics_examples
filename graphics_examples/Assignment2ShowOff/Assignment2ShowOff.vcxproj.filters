@@ -27,7 +27,7 @@
     <ClCompile Include="..\..\common\cube_tex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="terrain_object.cpp">
+    <ClCompile Include="terrain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -55,10 +55,10 @@
     <ClInclude Include="..\..\common\cube_tex.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="terrain.h">
+    <ClInclude Include="terrain.old.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="terrain_object.h">
+    <ClInclude Include="terrain.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

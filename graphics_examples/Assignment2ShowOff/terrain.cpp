@@ -8,7 +8,7 @@
    Iain Martin November 2018
 */
 
-#include "terrain_object.h"
+#include "terrain.h"
 #include <glm/gtc/noise.hpp>
 #include "glm/gtc/random.hpp"
 #include <stdio.h>
@@ -20,7 +20,7 @@ using namespace glm;
 /* Define the vertex attributes for vertex positions and normals. 
    Make these match your application and vertex shader
    You might also want to add texture coordinates */
-terrain_object::terrain_object(int octaves, GLfloat freq, GLfloat scale)
+Terrain::Terrain(int octaves, GLfloat freq, GLfloat scale)
 {
 	attribute_v_coord = 0;
 	attribute_v_colour = 1;
@@ -34,7 +34,7 @@ terrain_object::terrain_object(int octaves, GLfloat freq, GLfloat scale)
 }
 
 
-terrain_object::~terrain_object()
+Terrain::~Terrain()
 {
 	/* tidy up */
 	if (vertices) delete[] vertices;
@@ -44,7 +44,7 @@ terrain_object::~terrain_object()
 
 
 /* Copy the vertices, normals and element indices into vertex buffers */
-void terrain_object::createObject()
+void Terrain::createObject()
 {
 	/* Generate the vertex buffer object */
 	glGenBuffers(1, &vbo_mesh_vertices);
@@ -76,7 +76,7 @@ void terrain_object::createObject()
 Could improve efficiency by moving the vertex attribute pointer functions to the
 create object but this method is more general 
 */
-void terrain_object::drawObject(int drawmode)
+void Terrain::drawObject(int drawmode)
 {
 	int size;	// Used to get the byte size of the element (vertex index) array
 
@@ -135,7 +135,7 @@ void terrain_object::drawObject(int drawmode)
 
 /* Define the terrian heights */
 /* Uses code adapted from OpenGL Shading Language Cookbook: Chapter 8 */
-void terrain_object::calculateNoise()
+void Terrain::calculateNoise()
 {
 	/* Create the array to store the noise values */
 	/* The size is the number of vertices * number of octaves */
@@ -181,7 +181,7 @@ void terrain_object::calculateNoise()
    (xp, zp) specifies the pixel dimensions of the heightfield (x * y) vertices
    (xs, ys) specifies the size of the heightfield region in world coords
    */
-void terrain_object::createTerrain(GLuint xp, GLuint zp, GLfloat xs, GLfloat zs, GLfloat sealevel)
+void Terrain::createTerrain(GLuint xp, GLuint zp, GLfloat xs, GLfloat zs, GLfloat sealevel)
 {
 	xsize = xp;
 	zsize = zp;
@@ -254,7 +254,7 @@ void terrain_object::createTerrain(GLuint xp, GLuint zp, GLfloat xs, GLfloat zs,
 
 /* Calculate normals by using cross products along the triangle strips
    and averaging the normals for each vertex */
-void terrain_object::calculateNormals()
+void Terrain::calculateNormals()
 {
 	GLuint element_pos = 0;
 	vec3 AB, AC, cross_product;
@@ -305,7 +305,7 @@ void terrain_object::calculateNormals()
 }
 
 /* Stretch the height values to the range min to max */
-void terrain_object::stretchToRange(GLfloat min, GLfloat max)
+void Terrain::stretchToRange(GLfloat min, GLfloat max)
 {
 	/* Calculate min and max values */
 	GLfloat cmin, cmax;
@@ -329,7 +329,7 @@ void terrain_object::stretchToRange(GLfloat min, GLfloat max)
 
 
 /* Calculate terrian colours */
-void terrain_object::setColour(vec3 c)
+void Terrain::setColour(vec3 c)
 {
 	GLuint numVertices = xsize * zsize;
 
@@ -351,7 +351,7 @@ void terrain_object::setColour(vec3 c)
 
 
 /* Define a sea level in the terrain */
-void terrain_object::defineSeaLevel(GLfloat s)
+void Terrain::defineSeaLevel(GLfloat s)
 {
 	sealevel = s;
 	for (int v = 0; v < xsize*zsize; v++)
@@ -365,7 +365,7 @@ void terrain_object::defineSeaLevel(GLfloat s)
 
 
 /* Calculate terrian colours based on height with small random variations */
-void terrain_object::setColourBasedOnHeight()
+void Terrain::setColourBasedOnHeight()
 {
 	GLuint numVertices = xsize * zsize;
 
@@ -405,7 +405,7 @@ void terrain_object::setColourBasedOnHeight()
 // Rounds the floating point grid values to get the nearest (int) grid point
 // Note that a more accurate algorithm would be a bilinear interpolation
 // of the four nearest grid points
-float terrain_object::heightAtPosition(GLfloat x, GLfloat z)
+float Terrain::heightAtPosition(GLfloat x, GLfloat z)
 {
 	// Get grid position in floating point
 	vec2 grid_pos = getGridPos(x, z);
@@ -430,7 +430,7 @@ float terrain_object::heightAtPosition(GLfloat x, GLfloat z)
 
 // Get a terrain height array gtid position from a world coordinate
 // Note that this will only work if you DON'T scale and shift the terrain object
-vec2 terrain_object::getGridPos(GLfloat x, GLfloat z)
+vec2 Terrain::getGridPos(GLfloat x, GLfloat z)
 {
 	GLfloat Xgrid = ((x + (width / 2.f)) / width) * float(xsize);
 	GLfloat Zgrid = ((z + (height / 2.f)) / height) * float(zsize);
