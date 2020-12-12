@@ -28,18 +28,14 @@ also includes the OpenGL extension initialisation. */
 #include "cube_tex.h"
 #include "terrain.h"
 
+#include "config.h"
+#include "globals.h"
+#include "camera.h"
+
 
 /* Include headers for our objects. */
 
 /* --------------------- */
-
-/* CONSTANTS */
-const float FOV = 60.0F;
-const float CAM_MOVEMENT_SPEED = 0.5;
-
-/* Used for resizing the window. */
-GLfloat aspect_ratio;
-
 
 /* OpenGL specific variables */
 
@@ -65,25 +61,84 @@ GLfloat cam_angle_x_inc, cam_angle_y_inc, cam_angle_z_inc = 0; // For moving the
 
 GLfloat y_rotation, y_rotation_inc = 0;
 
-
-TinyObjLoader obj;
+TinyObjLoader revolver;
 Cube cube;
-Texture bark;
+Texture grassText;
 Terrain* terrain;
+//Camera* cam;
+int cameraMode = 1; //Temporary untill i fix the camera class
 
 void initTerrain()
 {
+
 	terrain = new Terrain(3.0f, 1.0f, 6.0f);
 	terrain->createTerrain(600.f, 600.f, 12.f, 12.f);
 	terrain->setColour(glm::vec3(0, 1, 1));
 	terrain->createObject();
 }
 
+
+/* To change camera position */
+glm::mat4 changeCam(const int mode)
+{
+	//Defining the projection model and passing it to the shader
+	glm::mat4 projection = glm::perspective(glm::radians(FOV), aspectRatio, 0.1f, 100.0f);
+	glUniformMatrix4fv(projectionId, 1, GL_FALSE, &projection[0][0]);
+
+	// Definng the default camera position
+	glm::vec3 camPosition = glm::vec3(4.0f, 3.0f, 40.0f);
+	glm::vec3 camAngle = glm::vec3(4.0f, 3.0f, 0.0f);
+	glm::vec3 camHeadsup = glm::vec3(0.0f, 1.0f, 0.0f);
+
+	switch (mode)
+	{
+	case 1:
+		camPosition = glm::vec3(4.0f, 3.0f, 40.0f);
+		camAngle = glm::vec3(4.0f, 3.0f, 0.0f);
+		camHeadsup = glm::vec3(0.0f, 1.0f, 0.0f);
+		break;
+	case 2:
+		camPosition = glm::vec3(4.0f, 50.0f, 0.0f);
+		camAngle = glm::vec3(4.0f, 3.0f, 0.0f);
+		camHeadsup = glm::vec3(0.0f, 0.0f, -1.0f);
+		break;
+	case 3:
+		camPosition = glm::vec3(30.0f, 30.0f, 30.0f);
+		camAngle = glm::vec3(2.0f, 3.0f, 0.0f);
+
+		camHeadsup = glm::vec3(0.0f, 1.0f, 0.0f);
+		break;
+	}
+
+	// Camera movement changes
+	glm::vec3 camMoveBy = glm::vec3(cam_x_inc, cam_y_inc, cam_z_inc);
+	glm::vec3 camLookMoveBy =
+		glm::vec3(cam_angle_x_inc, cam_angle_y_inc, cam_angle_z_inc)
+		+ camMoveBy + camAngle;
+
+	// To apply the changes
+	camPosition += camMoveBy;
+	camAngle = camLookMoveBy;
+
+	/*
+	* TODO:
+	*	- Need to figure out how to move the camera towards the lookAt vector.
+	*	- Need to figure out the angle max out issue.
+	*
+	* Nice to have:
+	*	- Add mouse input for angle change.
+	*	- Add camera tilt (prefferably toggles).
+	*
+	*/
+
+	return glm::lookAt(camPosition, camAngle, camHeadsup);
+}
+
 /* Function that first sets up the scene. */
 void init(GLWrapper* glw)
 {
 	//aspect_ratio = 1024.f / 768.f;
-	aspect_ratio = 1920.0f / 1080.0f;
+	aspectRatio = 1920.0f / 1080.0f;
 	modelScale = 3;
 
 	glGenVertexArrays(1, &vao);
@@ -103,22 +158,22 @@ void init(GLWrapper* glw)
 
 	// Defining all the uniforms
 	modelId = glGetUniformLocation(program, "model");
+
+	// Cam setup
 	viewId = glGetUniformLocation(program, "view");
 	projectionId = glGetUniformLocation(program, "projection");
-	
+	//cam = new Camera(program);
+
 	// For creating terrain
 	initTerrain();
 
-	//cube.makeCube();
-
-	obj = TinyObjLoader();
-	obj.load_obj("obj\\revolver_normal.obj");
-	//obj.load_obj("obj\\monkey_normals.obj");
+	//revolver = TinyObjLoader();
+	//revolver.load_obj("obj\\revolver_normal.obj");
 
 	// loading texture
 	try
 	{
-		bark.initTexture("textures\\wood.jpg");
+		grassText.initTexture("textures\\wood.jpg");
 	}
 	catch (std::exception& e)
 	{
@@ -146,29 +201,26 @@ void draw() {
 	// Define the shader program to be used
 	glUseProgram(program);
 
-	// ------------------ Basic setup end -------------------
-
 	// ------------------ Setting up camera -------------------
+	// THIS SETUP ISNT FINISHED
 
-	//Defining the projection model and passing it to the shader
-	glm::mat4 projection = glm::perspective(glm::radians(FOV), aspect_ratio, 0.1f, 100.0f);
-	glUniformMatrix4fv(projectionId, 1, GL_FALSE, &projection[0][0]);
-
-	// Defining the camera direction and passing it to the shader
-	glm::vec3 camPosition = glm::vec3(0.0f, 0.0f, 8.0f);
-	glm::vec3 camAngle = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::vec3 camHeadsup = glm::vec3(0.0f, 1.0f, 0.0f);
+	/*
+	// Camera movement changes
+	cam->setAspectRatio(aspectRatio);
 
 	// Camera movement changes
 	glm::vec3 camMoveBy = glm::vec3(cam_x_inc, cam_y_inc, cam_z_inc);
-	glm::vec3 camLookMoveBy = glm::vec3(cam_angle_x_inc, cam_angle_y_inc, cam_angle_z_inc) + camMoveBy;
+	glm::vec3 camLookMoveBy =
+		glm::vec3(cam_angle_x_inc, cam_angle_y_inc, cam_angle_z_inc)
+		+ camMoveBy + cam->lookAt.angle;
 
-	// To apply the changes
-	camAngle = camLookMoveBy;
-	camPosition += camMoveBy;
+	cam->changeCam(camMoveBy, camLookMoveBy);
 
-	glm::mat4 view = glm::lookAt(camPosition, camAngle, camHeadsup);
+	cam->draw();
+	*/
 
+	// Setting up camera
+	glm::mat4 view = changeCam(cameraMode);
 	glUniformMatrix4fv(viewId, 1, GL_FALSE, &view[0][0]);
 
 	// ------------------- Tralslations -------------------
@@ -184,15 +236,12 @@ void draw() {
 	//model.top() = glm::rotate(model.top(), glm::radians(20.0f), glm::vec3(1,0,0));
 	glUniformMatrix4fv(modelId, 1, GL_FALSE, &model.top()[0][0]);
 
-	
+
+	grassText.bindTexture();
+	//revolver.drawObject(drawmode);
 	// For drawing terrain
 	terrain->drawObject(drawmode);
-
-	bark.bindTexture();
-	//cube.drawCube(0);
-	obj.drawObject(drawmode);
-
-	bark.unbindTexture();
+	grassText.unbindTexture();
 
 
 	glDisableVertexAttribArray(0);
@@ -215,17 +264,27 @@ void key_handler(GLFWwindow* window, int key, int s, int action, int mods) {
 	}
 
 
-	if (key == 'W') cam_z_inc -= 1.0f * CAM_MOVEMENT_SPEED; // Move forward
-	if (key == 'S') cam_z_inc += 1.0f * CAM_MOVEMENT_SPEED; // Move backword
-	if (key == 'D') cam_x_inc += 1.0f * CAM_MOVEMENT_SPEED; // Move right
-	if (key == 'A') cam_x_inc -= 1.0f * CAM_MOVEMENT_SPEED; // Move left
-	if (key == GLFW_KEY_SPACE) cam_y_inc += 1.0f * CAM_MOVEMENT_SPEED; // Move up
-	if (key == GLFW_KEY_LEFT_CONTROL) cam_y_inc -= 1.0f * CAM_MOVEMENT_SPEED; // Move down
+	if (key == 'W')
+		cam_z_inc -= CAM_MOVEMENT_SPEED; // Move forward
+	if (key == 'S')
+		cam_z_inc += CAM_MOVEMENT_SPEED; // Move backword
+	if (key == 'D')
+		cam_x_inc += CAM_MOVEMENT_SPEED; // Move right
+	if (key == 'A')
+		cam_x_inc -= CAM_MOVEMENT_SPEED; // Move left
+	if (key == GLFW_KEY_SPACE)
+		cam_y_inc += CAM_MOVEMENT_SPEED; // Move up
+	if (key == GLFW_KEY_LEFT_CONTROL)
+		cam_y_inc -= CAM_MOVEMENT_SPEED; // Move down
 
-	if (key == GLFW_KEY_RIGHT) cam_angle_x_inc += 1.0f * CAM_MOVEMENT_SPEED; // Look right
-	if (key == GLFW_KEY_LEFT) cam_angle_x_inc -= 1.0f * CAM_MOVEMENT_SPEED; // Look left
-	if (key == GLFW_KEY_UP) cam_angle_y_inc += 1.0f * CAM_MOVEMENT_SPEED; // Look up
-	if (key == GLFW_KEY_DOWN) cam_angle_y_inc -= 1.0f * CAM_MOVEMENT_SPEED; // Look down
+	if (key == GLFW_KEY_RIGHT)
+		cam_angle_x_inc += CAM_MOVEMENT_SPEED; // Look right
+	if (key == GLFW_KEY_LEFT)
+		cam_angle_x_inc -= CAM_MOVEMENT_SPEED; // Look left
+	if (key == GLFW_KEY_UP)
+		cam_angle_y_inc += CAM_MOVEMENT_SPEED; // Look up
+	if (key == GLFW_KEY_DOWN)
+		cam_angle_y_inc -= CAM_MOVEMENT_SPEED; // Look down
 
 	if (key == ']') y_rotation_inc += 0.1f;
 	if (key == '[') y_rotation_inc -= 0.1f;
@@ -238,7 +297,7 @@ void resise_handler(GLFWwindow* window, int w, int h) {
 	glViewport(0, 0, (GLsizei)w, (GLsizei)h);
 
 	// Store aspect ratio to use for our perspective projection
-	aspect_ratio = float(w) / float(h);
+	aspectRatio = float(w) / float(h);
 }
 
 /* Entry point. */

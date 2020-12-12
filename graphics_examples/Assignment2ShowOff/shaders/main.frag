@@ -45,6 +45,7 @@ void main()
 
 	vec4 shaderColour = frag_attenuation * ( ambient + diffuse_light + vec4(speculat_light,1.0)); 
 
-	outputColor = shaderColour;
-	//outputColor = ambient_colour + textColour;
+	//outputColor = shaderColour;
+	outputColor = frag_colour * textColour;
+	//outputColor = textColour;
 }

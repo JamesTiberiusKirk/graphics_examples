@@ -321,11 +321,13 @@ glm::mat4 changeCam(const int mode)
 
 	// Camera movement changes
 	glm::vec3 camMoveBy = glm::vec3(cam_x_inc, cam_y_inc, cam_z_inc);
-	glm::vec3 camLookMoveBy = glm::vec3(cam_angle_x_inc, cam_angle_y_inc, cam_angle_z_inc) + camMoveBy + camAngle;
+	glm::vec3 camLookMoveBy =
+		glm::vec3(cam_angle_x_inc, cam_angle_y_inc, cam_angle_z_inc)
+		+ camMoveBy + camAngle;
 
 	// To apply the changes
-	camAngle = camLookMoveBy;
 	camPosition += camMoveBy;
+	camAngle = camLookMoveBy;
 
 	/*
 	* TODO:

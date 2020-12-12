@@ -33,9 +33,9 @@ static  void PrintInfo(const tinyobj::attrib_t& attrib,
 TinyObjLoader::TinyObjLoader()
 {
 	attribute_v_coord = 0;
-	attribute_v_normal = 2;
-	attribute_v_texcoord = 3;
-	
+	attribute_v_normal = 1;
+	attribute_v_texcoord = 2;
+
 	numVertices = 0;
 	numNormals = 0;
 	numTexCoords = 0;

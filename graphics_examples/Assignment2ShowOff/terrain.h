@@ -54,6 +54,10 @@ public:
 	GLfloat height_scale;
 	GLfloat sealevel;
 
+	// Additions for texture
+	GLuint texCoordsObject;
+	GLuint attribute_v_texcoord;
+
 	float height_min, height_max;	// range of terrain heights
 };
 

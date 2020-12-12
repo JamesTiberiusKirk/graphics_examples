@@ -143,6 +143,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\common\cube_tex.cpp" />
     <ClCompile Include="..\..\common\wrapper_glfw.cpp" />
+    <ClCompile Include="camera.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="terrain.cpp" />
     <ClCompile Include="tiny_loader_texture.cpp" />
@@ -154,8 +155,9 @@
   <ItemGroup>
     <ClInclude Include="..\..\common\cube_tex.h" />
     <ClInclude Include="..\..\common\wrapper_glfw.h" />
-    <ClInclude Include="Object.h" />
-    <ClInclude Include="terrain.old.h" />
+    <ClInclude Include="camera.h" />
+    <ClInclude Include="config.h" />
+    <ClInclude Include="globals.h" />
     <ClInclude Include="terrain.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="tiny_loader_texture.h" />

@@ -25,6 +25,7 @@ Terrain::Terrain(int octaves, GLfloat freq, GLfloat scale)
 	attribute_v_coord = 0;
 	attribute_v_colour = 1;
 	attribute_v_normal = 2;
+	attribute_v_texcoord = 3;
 	xsize = 0;	// Set to zero because we haven't created the heightfield array yet
 	zsize = 0;	
 	perlin_octaves = octaves;
@@ -68,6 +69,12 @@ void Terrain::createObject()
 	glGenBuffers(1, &ibo_mesh_elements);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_mesh_elements);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, elements.size()* sizeof(GLuint), &(elements[0]), GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	// Generate a buffer for texture coordinates
+	glGenBuffers(1, &texCoordsObject);
+	glBindBuffer(GL_ARRAY_BUFFER, texCoordsObject);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(texcoords), texcoords, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 }
