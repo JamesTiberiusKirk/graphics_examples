@@ -32,7 +32,6 @@ public:
 	GLfloat aspectRatio;
 	Program *program;
 
-
 	Camera(Program *newProgram);
 	Camera(Program *newProgram, const CameraVecs newCamVecs);
 	~Camera() {};
@@ -40,7 +39,11 @@ public:
 	void init();
 	void draw();
 
-	void setAspectRatio(const GLfloat nAspectRatio);
+	void setAspectRatio(const GLfloat nAspectRatio)
+	{
+		this->aspectRatio = nAspectRatio;
+	}
+
 	void moveCam(const glm::vec3 moveByVec, const glm::vec3 angleByVec);
 };
 

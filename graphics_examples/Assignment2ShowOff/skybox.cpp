@@ -1,30 +1,8 @@
 #include "skybox.h"
 
-//inline glm::mat4 GenLookAt()
-//{
-//	return glm::lookAt(
-//		glm::vec3(0, 0, -1.5f),
-//		glm::vec3(0, 0, -1),
-//		glm::vec3(0, 1, 0)
-//	);
-//}
-//
-//inline void CamUniformSetup(GLuint& program, GLuint& viewId, GLuint& projectionId)
-//{
-//	viewId = glGetUniformLocation(program, "view");
-//	projectionId = glGetUniformLocation(program, "projection");
-//}
-//
-//
-//inline void DrawCam(GLuint& program, GLuint& viewId, GLuint& projectionId)
-//{
-//    glm::mat4 lookAt = GenLookAt();
-//	glm::mat4 projection = glm::perspective(glm::radians(FOV), aspectRatio, 0.1f, 100.0f);
-//	glUniformMatrix4fv(projectionId, 1, GL_FALSE, &projection[0][0]);
-//	glUniformMatrix4fv(viewId, 1, GL_FALSE, &lookAt[0][0]);
-//}
 
-SkyBox::SkyBox(const char* vertShaderPath, const char* fragShaderPath) 
+/* Generic constructor which needs paths for textures files, vertex and frag shaders. */
+SkyBox::SkyBox(const std::vector<std::string> textureFilesPath, const char* vertShaderPath, const char* fragShaderPath)
 {
     program = new Program(vertShaderPath,fragShaderPath);
     float vertices[] = 
@@ -72,17 +50,7 @@ SkyBox::SkyBox(const char* vertShaderPath, const char* fragShaderPath)
          1.0f, -1.0f,  1.0f
     };
 
-	std::vector<std::string> textureFiles = 
-    {
-		"textures\\cubemap\\right.jpg",
-		"textures\\cubemap\\left.jpg",
-		"textures\\cubemap\\top.jpg",
-		"textures\\cubemap\\bottom.jpg",
-		"textures\\cubemap\\front.jpg",
-		"textures\\cubemap\\back.jpg"
-	};
-	
-	skyText.initCubeMap(textureFiles);
+	skyText.initCubeMap(textureFilesPath);
 
     int loc = glGetUniformLocation(program->uid, "skybox");
     if (loc > 0) glUniform1i(loc, 0);
@@ -96,7 +64,6 @@ SkyBox::SkyBox(const char* vertShaderPath, const char* fragShaderPath)
 		}
 	);
 
-
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -104,6 +71,7 @@ SkyBox::SkyBox(const char* vertShaderPath, const char* fragShaderPath)
 
 }
 
+/* To be used in the update method. */
 void SkyBox::draw() 
 {
     cam->draw();

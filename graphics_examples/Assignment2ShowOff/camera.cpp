@@ -24,6 +24,7 @@ Camera::Camera(Program *newProgram, const CameraVecs newCamVecs)
 	init();
 }
 
+/* This function initialises the uniforms */
 void Camera::init()
 {
 	uniforms.view = glGetUniformLocation(program->uid, "view");
@@ -48,12 +49,6 @@ void Camera::draw()
 	//std::cout << lookAt.position.x << std::endl;
 	glm::mat4 view = glm::lookAt(lookAt.position, lookAt.angle, lookAt.headsup);
 	glUniformMatrix4fv(uniforms.view, 1, GL_FALSE, &view[0][0]);
-}
-
-/* Setter for aspect ratio. */
-void Camera::setAspectRatio(const GLfloat nAspectRatio)
-{
-	aspectRatio = nAspectRatio;
 }
 
 /* Funcion to move the camera postion and angle. */

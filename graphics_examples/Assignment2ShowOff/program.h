@@ -15,7 +15,6 @@ public:
 
 private:
 	
-	/* Shader load and build support functions */
 	GLuint loadShader(const char *vertPath, const char *fragPath);
 	GLuint buildShader(GLenum ehaderType, const std::string &shaderText);
 };

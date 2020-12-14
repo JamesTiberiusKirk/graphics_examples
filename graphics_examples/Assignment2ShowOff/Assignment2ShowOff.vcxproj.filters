@@ -13,26 +13,8 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\shapes">
-      <UniqueIdentifier>{3702c234-d7c7-4264-a2b4-e68dbae09205}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\shaders">
       <UniqueIdentifier>{ab67438d-6674-4fe6-a5ec-3c913d9cc6d1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\tiny_loader">
-      <UniqueIdentifier>{d91633a1-0a3f-406f-ae45-feef3749e421}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\terrain">
-      <UniqueIdentifier>{e81b93fc-b24e-40d0-a38d-5778ea950544}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\texture">
-      <UniqueIdentifier>{4179c484-f716-4055-88c9-f2646e8def3f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\camera">
-      <UniqueIdentifier>{890ea8db-c0d8-4a17-8746-ffd1cb4bd60c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\skybox">
-      <UniqueIdentifier>{104b0e73-1c48-434d-9283-ca998bca1d67}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\shaders\skybox">
       <UniqueIdentifier>{961cddd2-233f-45ff-915e-20b9359b9b18}</UniqueIdentifier>
@@ -42,25 +24,25 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\common\cube_tex.cpp">
-      <Filter>Source Files\shapes</Filter>
-    </ClCompile>
-    <ClCompile Include="tiny_loader_texture.cpp">
-      <Filter>Source Files\tiny_loader</Filter>
-    </ClCompile>
-    <ClCompile Include="camera.cpp">
-      <Filter>Source Files\camera</Filter>
-    </ClCompile>
-    <ClCompile Include="terrain.cpp">
-      <Filter>Source Files\terrain</Filter>
-    </ClCompile>
-    <ClCompile Include="skybox.cpp">
-      <Filter>Source Files\skybox</Filter>
-    </ClCompile>
     <ClCompile Include="program.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="wrapper_glfw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tiny_loader_texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="terrain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cube_tex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="skybox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -79,12 +61,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="config.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="globals.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -110,6 +86,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="wrapper_glfw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="globals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

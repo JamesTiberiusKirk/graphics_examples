@@ -28,12 +28,12 @@ inline std::string readFile(const char *filePath)
 }
 
 
+/* Generic constructor which takes in shader paths. */
 Program::Program(const char* vertPath, const char* fragPath)
 {
 	try
 	{
 		this->uid = loadShader(vertPath, fragPath);
-
 	}
 	catch (std::exception& e)
 	{

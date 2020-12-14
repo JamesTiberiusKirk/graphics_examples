@@ -28,24 +28,24 @@ if you prefer */
 
 /* --------------------- */
 
+// TODO NEED TO MAKE THIS STATIC GLOBALLY SOMEHOW
 GLfloat aspectRatio;
 
 /* OpenGL specific variables */
-
-GLuint /*program, skyBoxProgram,*/ vao;
-
+GLuint vao;
 
 /* Shader variables (Unifoirms) */
 GLuint modelId, viewId, projectionId;
-
-/* Vertecises */
 
 /* Object instances */
 GLuint drawmode = 0;
 GLfloat modelScale;
 
+Terrain* terrain;
+Camera* cam;
+SkyBox* skyBox;
+Program* mainProgram;
 
-/* Togglable settings variables */
 
 /* Used for movement */
 GLfloat cam_x_inc, cam_y_inc, cam_z_inc = 0; // For moving the position of the camera
@@ -53,11 +53,16 @@ GLfloat cam_angle_x_inc, cam_angle_y_inc, cam_angle_z_inc = 0; // For moving the
 
 GLfloat y_rotation, y_rotation_inc = 0;
 
-Terrain* terrain;
-Camera* cam;
-SkyBox* skyBox;
-Program* mainProgram;
-//Program* skyBoxProgram;
+
+std::vector<std::string> skyBoxTextureFilePaths =
+{
+	"textures\\cubemap\\right.jpg",
+	"textures\\cubemap\\left.jpg",
+	"textures\\cubemap\\top.jpg",
+	"textures\\cubemap\\bottom.jpg",
+	"textures\\cubemap\\front.jpg",
+	"textures\\cubemap\\back.jpg"
+};
 
 void initTerrain()
 {
@@ -70,44 +75,19 @@ void initTerrain()
 /* Function that first sets up the scene. */
 void init(GLWrapper* glw)
 {
-	//aspect_ratio = 1024.f / 768.f;
 	aspectRatio = 1920.0f / 1080.0f;
 	modelScale = 3;
 
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
-	
-	//try
-	//{
-	//	program = glw->LoadShader("shaders\\main.vert", "shaders\\main.frag");
-	//}
-	//catch (std::exception& e)
-	//{
-	//	std::cout << "SHADER LOAD EXCEPTION: " << e.what() << std::endl;
-	//	std::cin.ignore();
-	//	exit(1); // 1 to tell the system that there was an error
-	//}
-
-	// For the skybox hsader
-	//try
-	//{
-	//	skyBoxProgram = glw->LoadShader("shaders\\skybox\\skybox.vert", 
-	//		"shaders\\skybox\\skybox.frag");
-	//}
-	//catch (std::exception& e)
-	//{
-	//	std::cout << "SKYBOX SHADER LOAD EXCEPTION: " << e.what() << std::endl;
-	//	std::cin.ignore();
-	//	exit(1); // 1 to tell the system that there was an error
-	//}
-
 	// Defining all the uniforms
 	modelId = glGetUniformLocation(mainProgram->uid, "model");
 	// For the Cam setup
 	cam = new Camera(mainProgram);
 
-	skyBox = new SkyBox("shaders\\skybox\\skybox.vert", "shaders\\skybox\\skybox.frag");
+
+	skyBox = new SkyBox( skyBoxTextureFilePaths,"shaders\\skybox\\skybox.vert", "shaders\\skybox\\skybox.frag");
 
 	// For creating terrain
 	initTerrain();
@@ -187,7 +167,6 @@ void key_handler(GLFWwindow* window, int key, int s, int action, int mods) {
 		if (drawmode > 2) drawmode = 0;
 	}
 
-
 	if (key == 'W')
 		cam_z_inc -= CAM_MOVEMENT_SPEED; // Move forward
 	if (key == 'S')
@@ -212,8 +191,6 @@ void key_handler(GLFWwindow* window, int key, int s, int action, int mods) {
 
 	if (key == ']') y_rotation_inc += 0.1f;
 	if (key == '[') y_rotation_inc -= 0.1f;
-
-
 }
 
 /* This is the hadnler called when the window is resised. */

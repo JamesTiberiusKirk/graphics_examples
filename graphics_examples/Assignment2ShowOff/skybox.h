@@ -18,7 +18,7 @@ public:
 	Program *program;
 	GLuint vao, vbo;
 
-	SkyBox(const char* vertShaderPath, const char* fragShaderPath);
+	SkyBox(const  std::vector<std::string> textureFiles, const char* vertShaderPath, const char* fragShaderPath);
 	~SkyBox();
 
 	void draw();
