@@ -654,7 +654,7 @@ int main(void)
 	glw->setReshapeCallback(resise_handler);
 
 	/* Output the OpenGL vendor and version */
-	glw->DisplayVersion();
+	glw->displayVersion();
 
 	init(glw);
 

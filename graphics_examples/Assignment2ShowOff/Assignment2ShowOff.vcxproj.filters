@@ -28,9 +28,6 @@
     <Filter Include="Source Files\texture">
       <UniqueIdentifier>{4179c484-f716-4055-88c9-f2646e8def3f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\glfw_wrapper">
-      <UniqueIdentifier>{d7f15807-944a-46dc-a619-d5f15275fa44}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\camera">
       <UniqueIdentifier>{890ea8db-c0d8-4a17-8746-ffd1cb4bd60c}</UniqueIdentifier>
     </Filter>
@@ -51,9 +48,6 @@
     <ClCompile Include="tiny_loader_texture.cpp">
       <Filter>Source Files\tiny_loader</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\common\wrapper_glfw.cpp">
-      <Filter>Source Files\glfw_wrapper</Filter>
-    </ClCompile>
     <ClCompile Include="camera.cpp">
       <Filter>Source Files\camera</Filter>
     </ClCompile>
@@ -62,6 +56,12 @@
     </ClCompile>
     <ClCompile Include="skybox.cpp">
       <Filter>Source Files\skybox</Filter>
+    </ClCompile>
+    <ClCompile Include="program.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wrapper_glfw.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -91,9 +91,6 @@
     <ClInclude Include="camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\common\wrapper_glfw.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\common\cube_tex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -107,6 +104,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="skybox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="program.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="wrapper_glfw.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

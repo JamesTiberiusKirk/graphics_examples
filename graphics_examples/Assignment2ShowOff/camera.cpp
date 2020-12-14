@@ -2,12 +2,12 @@
 
 /*
 TODO:
-	- need to figure out how to increment the camera angle and not throw it in a direction
-	- need to figure out hwo to increment the camera movement and not throw it again
-	- want to make camera position (like in the last assignment)
+	- Ideally the aspect ratio should be static
+	- Make a cam position switcher between different views
 */
 
-Camera::Camera(const GLuint &newPorgram)
+/* Just a default constructor. */
+Camera::Camera(Program *newPorgram)
 	:	program(newPorgram)
 {
 	lookAt.position = glm::vec3(0.0f, 0.0f, 8.0f);
@@ -16,7 +16,8 @@ Camera::Camera(const GLuint &newPorgram)
 	init();
 }
 
-Camera::Camera(const GLuint &newProgram, const CameraVecs newCamVecs)
+/* Constructor with a custom cam vecs. */
+Camera::Camera(Program *newProgram, const CameraVecs newCamVecs)
 	:	program(newProgram),
 		lookAt(newCamVecs)
 {
@@ -25,10 +26,11 @@ Camera::Camera(const GLuint &newProgram, const CameraVecs newCamVecs)
 
 void Camera::init()
 {
-	uniforms.view = glGetUniformLocation(program, "view");
-	uniforms.projection = glGetUniformLocation(program, "projection");
+	uniforms.view = glGetUniformLocation(program->uid, "view");
+	uniforms.projection = glGetUniformLocation(program->uid, "projection");
 }
 
+/* The function which updates the cam every frame. */
 void Camera::draw() 
 {
 	//Defining the projection model and passing it to the shader
@@ -41,33 +43,22 @@ void Camera::draw()
 
 
 	lookAt.position += moveBy;
-	lookAt.angle = lookMoveBy;
+	lookAt.angle += lookMoveBy + moveBy;
 
-	std::cout << lookAt.position.x << std::endl;
+	//std::cout << lookAt.position.x << std::endl;
 	glm::mat4 view = glm::lookAt(lookAt.position, lookAt.angle, lookAt.headsup);
 	glUniformMatrix4fv(uniforms.view, 1, GL_FALSE, &view[0][0]);
 }
 
-void Camera::movePosBy(const glm::vec3 moveByVec) 
+/* Setter for aspect ratio. */
+void Camera::setAspectRatio(const GLfloat nAspectRatio)
 {
-	lookAt.position += moveByVec;
+	aspectRatio = nAspectRatio;
 }
 
-void Camera::angleBy(glm::vec3 angleByVec) 
+/* Funcion to move the camera postion and angle. */
+void Camera::moveCam(glm::vec3 moveByVec, glm::vec3 angleByVec)
 {
-	lookAt.angle = angleByVec;
-}
-
-void Camera::changeCam(glm::vec3 moveByVec, glm::vec3 angleByVec)
-{
-	//lookAt.position += moveByVec;
-	//lookAt.angle = angleByVec;
-
 	moveBy = moveByVec;
 	lookMoveBy = angleByVec;
-}
-
-void Camera::setAspectRatio(const GLfloat newAspectRatio) 
-{
-	aspectRatio = newAspectRatio;
 }

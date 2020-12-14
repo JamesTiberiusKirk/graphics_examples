@@ -273,7 +273,7 @@ int main(int argc, char* argv[])
 	glw->setReshapeCallback(reshape);
 
 	// Output version
-	glw->DisplayVersion();
+	glw->displayVersion();
 
 	init(glw);
 

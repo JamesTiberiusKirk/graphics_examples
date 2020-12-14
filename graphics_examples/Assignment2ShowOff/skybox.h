@@ -6,20 +6,21 @@
 #include "common.h"
 #include "texture.h"
 #include "config.h"
-#include "globals.h"
-
+#include "camera.h"
+#include "program.h"
 
 class SkyBox 
 {
 public:
 	GLuint viewId, projectionId;
 	Texture skyText;
-	GLuint program, vao, vbo;
+	Camera *cam;
+	Program *program;
+	GLuint vao, vbo;
 
-	SkyBox(const GLuint &program);
+	SkyBox(const char* vertShaderPath, const char* fragShaderPath);
 	~SkyBox();
 
-	void init();
 	void draw();
 };
 

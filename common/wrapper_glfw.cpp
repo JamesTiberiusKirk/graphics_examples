@@ -79,7 +79,7 @@ GLFWwindow* GLWrapper::getWindow()
 /*
  * Print OpenGL Version details
  */
-void GLWrapper::DisplayVersion()
+void GLWrapper::displayVersion()
 {
 	/* One way to get OpenGL version*/
 	int major, minor;

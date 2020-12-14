@@ -288,7 +288,7 @@ int main(int argc, char* argv[])
 	glw->setReshapeCallback(reshape);
 	
 	/* Output the OpenGL vendor and version */
-	glw->DisplayVersion();
+	glw->displayVersion();
 
 	init(glw);
 

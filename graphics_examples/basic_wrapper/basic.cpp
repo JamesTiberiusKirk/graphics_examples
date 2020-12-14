@@ -59,7 +59,7 @@ void init(GLWrapper *glw)
 		exit(0);
 	}
 
-	glw->DisplayVersion();
+	glw->displayVersion();
 
 }
 
