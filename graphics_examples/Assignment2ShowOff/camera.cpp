@@ -35,10 +35,15 @@ void Camera::draw()
 	glm::mat4 projection = glm::perspective(glm::radians(FOV), aspectRatio, 0.1f, 100.0f);
 	glUniformMatrix4fv(uniforms.projection, 1, GL_FALSE, &projection[0][0]);
 
+	lookAt.position = glm::vec3(0.0f, 0.0f, 8.0f);
+	lookAt.angle = glm::vec3(0.0f, 0.0f, 0.0f);
+	lookAt.headsup = glm::vec3(0.0f, 1.0f, 0.0f);
+
 
 	lookAt.position += moveBy;
 	lookAt.angle = lookMoveBy;
 
+	std::cout << lookAt.position.x << std::endl;
 	glm::mat4 view = glm::lookAt(lookAt.position, lookAt.angle, lookAt.headsup);
 	glUniformMatrix4fv(uniforms.view, 1, GL_FALSE, &view[0][0]);
 }

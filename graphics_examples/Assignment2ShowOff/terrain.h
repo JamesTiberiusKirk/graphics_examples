@@ -6,14 +6,14 @@
 
 #pragma once
 
-#include "wrapper_glfw.h"
+#include "texture.h"
 #include <vector>
-#include <glm/glm.hpp>
+#include "common.h"
 
 class Terrain
 {
 public:
-	Terrain(int octaves, GLfloat freq, GLfloat scale);
+	Terrain(int octaves, GLfloat freq, GLfloat scale, const char *textFilename);
 	~Terrain();
 
 	void calculateNoise();
@@ -55,8 +55,12 @@ public:
 	GLfloat sealevel;
 
 	// Additions for texture
-	GLuint texCoordsObject;
+	//GLuint texCoordsObjectId;
 	GLuint attribute_v_texcoord;
+	//std::vector<GLuint> textCoords;
+	//char* terrainTexFileName;
+	Texture terrainText;
+	// ---------
 
 	float height_min, height_max;	// range of terrain heights
 };

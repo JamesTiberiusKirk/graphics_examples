@@ -10,28 +10,18 @@ if you prefer */
 #endif
 #pragma comment(lib, "opengl32.lib")
 
-/* Include the header to the GLFW wrapper class which
-also includes the OpenGL extension initialisation. */
-#include "wrapper_glfw.h"
+#define STB_IMAGE_IMPLEMENTATION
+
 #include <iostream>
-
-/* We'll use the STD stack class to make our stack or matrices. */
 #include <stack>
-
-/* Include GLM core and matrix extensions. */
-#include <glm/glm.hpp>
-#include "glm/gtc/matrix_transform.hpp"
-#include <glm/gtc/type_ptr.hpp>
-
 #include "tiny_loader_texture.h"
-#include "texture.h"
-#include "cube_tex.h"
+
+#include "wrapper_glfw.h"
 #include "terrain.h"
 
 #include "config.h"
 #include "globals.h"
-#include "camera.h"
-
+#include "skybox.h"
 
 /* Include headers for our objects. */
 
@@ -39,7 +29,7 @@ also includes the OpenGL extension initialisation. */
 
 /* OpenGL specific variables */
 
-GLuint program, vao;
+GLuint program, skyBoxProgram, vao;
 
 
 /* Shader variables (Unifoirms) */
@@ -54,24 +44,21 @@ GLfloat modelScale;
 
 /* Togglable settings variables */
 
-
 /* Used for movement */
 GLfloat cam_x_inc, cam_y_inc, cam_z_inc = 0; // For moving the position of the camera
 GLfloat cam_angle_x_inc, cam_angle_y_inc, cam_angle_z_inc = 0; // For moving the angle of the camera
 
 GLfloat y_rotation, y_rotation_inc = 0;
 
-TinyObjLoader revolver;
-Cube cube;
-Texture grassText;
 Terrain* terrain;
 //Camera* cam;
+SkyBox* skyBox;
+
 int cameraMode = 1; //Temporary untill i fix the camera class
 
 void initTerrain()
 {
-
-	terrain = new Terrain(3.0f, 1.0f, 6.0f);
+	terrain = new Terrain(3.0f, 1.0f, 6.0f, "textures\\earth.png");
 	terrain->createTerrain(600.f, 600.f, 12.f, 12.f);
 	terrain->setColour(glm::vec3(0, 1, 1));
 	terrain->createObject();
@@ -112,9 +99,7 @@ glm::mat4 changeCam(const int mode)
 
 	// Camera movement changes
 	glm::vec3 camMoveBy = glm::vec3(cam_x_inc, cam_y_inc, cam_z_inc);
-	glm::vec3 camLookMoveBy =
-		glm::vec3(cam_angle_x_inc, cam_angle_y_inc, cam_angle_z_inc)
-		+ camMoveBy + camAngle;
+	glm::vec3 camLookMoveBy = glm::vec3(cam_angle_x_inc, cam_angle_y_inc, cam_angle_z_inc) + camMoveBy + camAngle;
 
 	// To apply the changes
 	camPosition += camMoveBy;
@@ -156,32 +141,32 @@ void init(GLWrapper* glw)
 		exit(1); // 1 to tell the system that there was an error
 	}
 
-	// Defining all the uniforms
-	modelId = glGetUniformLocation(program, "model");
-
-	// Cam setup
-	viewId = glGetUniformLocation(program, "view");
-	projectionId = glGetUniformLocation(program, "projection");
-	//cam = new Camera(program);
-
-	// For creating terrain
-	initTerrain();
-
-	//revolver = TinyObjLoader();
-	//revolver.load_obj("obj\\revolver_normal.obj");
-
-	// loading texture
+	// For the skybox hsader
 	try
 	{
-		grassText.initTexture("textures\\wood.jpg");
+		skyBoxProgram = glw->LoadShader("shaders\\skybox\\skybox.vert", 
+			"shaders\\skybox\\skybox.frag");
 	}
 	catch (std::exception& e)
 	{
-		std::cout << e.what() << std::endl;
+		std::cout << "SKYBOX SHADER LOAD EXCEPTION: " << e.what() << std::endl;
 		std::cin.ignore();
 		exit(1); // 1 to tell the system that there was an error
 	}
 
+	// Defining all the uniforms
+	modelId = glGetUniformLocation(program, "model");
+	// For the Cam setup
+	viewId = glGetUniformLocation(program, "view");
+	projectionId = glGetUniformLocation(program, "projection");
+	//cam = new Camera(program);
+
+	skyBox = new SkyBox(skyBoxProgram);
+	skyBox->init();
+
+
+	// For creating terrain
+	initTerrain();
 }
 
 /* Function called for drawing every frame. */
@@ -204,9 +189,8 @@ void draw() {
 	// ------------------ Setting up camera -------------------
 	// THIS SETUP ISNT FINISHED
 
-	/*
 	// Camera movement changes
-	cam->setAspectRatio(aspectRatio);
+	/*cam->setAspectRatio(aspectRatio);
 
 	// Camera movement changes
 	glm::vec3 camMoveBy = glm::vec3(cam_x_inc, cam_y_inc, cam_z_inc);
@@ -216,14 +200,14 @@ void draw() {
 
 	cam->changeCam(camMoveBy, camLookMoveBy);
 
-	cam->draw();
-	*/
+	cam->draw();*/
 
 	// Setting up camera
 	glm::mat4 view = changeCam(cameraMode);
 	glUniformMatrix4fv(viewId, 1, GL_FALSE, &view[0][0]);
 
 	// ------------------- Tralslations -------------------
+
 
 	std::stack<glm::mat4> model;
 
@@ -236,19 +220,26 @@ void draw() {
 	//model.top() = glm::rotate(model.top(), glm::radians(20.0f), glm::vec3(1,0,0));
 	glUniformMatrix4fv(modelId, 1, GL_FALSE, &model.top()[0][0]);
 
-
-	grassText.bindTexture();
-	//revolver.drawObject(drawmode);
 	// For drawing terrain
 	terrain->drawObject(drawmode);
-	grassText.unbindTexture();
 
-
-	glDisableVertexAttribArray(0);
 	glUseProgram(0);
 
 	// Modify animation vars
 	y_rotation += y_rotation_inc;
+
+	// ------------------- Sky Box ------------------------
+
+	glDepthFunc(GL_LEQUAL);
+	glUseProgram(skyBoxProgram);
+
+	skyBox->draw();
+	glDisableVertexAttribArray(0);
+
+	glUseProgram(0);
+	glDepthFunc(GL_LESS);
+
+	// ----------------------------------------------------
 }
 
 /* This is the handler called for any key input. */

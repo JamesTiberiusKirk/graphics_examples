@@ -13,6 +13,7 @@
 */
 #include "wrapper_glfw.h"
 #include "config.h"
+#include <iostream>
 //#include "globals.h"
 
 struct CameraUniforms {

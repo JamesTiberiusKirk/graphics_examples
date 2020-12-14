@@ -1,18 +1,9 @@
-/* terrain_object.cpp
-   Includes functions to get floating point grid position from world coordinates
-   and get the height from floating point grid position.
-
-   vec2 terrain_object::getGridPos(GLfloat x, GLfloat z)
-   float terrain_object::heightAtPosition(GLfloat x, GLfloat z)
-
-   Iain Martin November 2018
-*/
-
-#include "terrain.h"
-#include <glm/gtc/noise.hpp>
-#include "glm/gtc/random.hpp"
 #include <stdio.h>
 #include <iostream>
+#include <glm/gtc/noise.hpp>
+#include <glm/gtc/random.hpp>
+
+#include "terrain.h"
 
 using namespace std;
 using namespace glm;
@@ -20,7 +11,7 @@ using namespace glm;
 /* Define the vertex attributes for vertex positions and normals. 
    Make these match your application and vertex shader
    You might also want to add texture coordinates */
-Terrain::Terrain(int octaves, GLfloat freq, GLfloat scale)
+Terrain::Terrain(int octaves, GLfloat freq, GLfloat scale, const char *textFilename)
 {
 	attribute_v_coord = 0;
 	attribute_v_colour = 1;
@@ -72,10 +63,33 @@ void Terrain::createObject()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// Generate a buffer for texture coordinates
-	glGenBuffers(1, &texCoordsObject);
-	glBindBuffer(GL_ARRAY_BUFFER, texCoordsObject);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(texcoords), texcoords, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	try
+	{
+		terrainText.initTexture("textures\\earth.png");
+		terrainText.unbindTexture();
+
+		terrainText.bindTexture();
+
+		glEnable(GL_TEXTURE_2D);
+		glGenBuffers(1, &terrainText.textureId);
+
+		glBindTexture(GL_TEXTURE_2D, terrainText.textureId);
+		glBindBuffer(GL_ARRAY_BUFFER, terrainText.textureId);
+
+		glEnableVertexAttribArray(terrainText.textureId);
+		glVertexAttribPointer(attribute_v_texcoord, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+		terrainText.unbindTexture();
+
+		//glBufferData(GL_ARRAY_BUFFER, textCoords.size() * sizeof(GLuint), &(textCoords[0]), GL_STATIC_DRAW);
+		//glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
+	catch (std::exception& e)
+	{
+		std::cout << e.what() << std::endl;
+		std::cin.ignore();
+		exit(1); // 1 to tell the system that there was an error
+	}
 
 }
 
@@ -124,6 +138,12 @@ void Terrain::drawObject(int drawmode)
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_mesh_elements); 
 	glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
+	
+
+	// For binging text
+	//glEnableVertexAttribArray(attribute_v_texcoord);
+	//glBindBuffer(GL_ARRAY_BUFFER, texCoordsObjectId);
+	//glVertexAttribPointer(attribute_v_texcoord, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 	// Enable this line to show model in wireframe
 	if (drawmode == 1)
@@ -229,10 +249,11 @@ void Terrain::createTerrain(GLuint xp, GLuint zp, GLfloat xs, GLfloat zs, GLfloa
 			// have been set.
 			normals[row * xsize + col] = vec3(0, 0.0f, 0);
 			zpos += zpos_step;
+
+
 		}
 		xpos += xpos_step;
 	}
-
 
 	/* Define vertices for triangle strips */
 	for (GLuint x = 0; x < xsize - 1; x++)
@@ -243,6 +264,7 @@ void Terrain::createTerrain(GLuint xp, GLuint zp, GLfloat xs, GLfloat zs, GLfloa
 		{
 			elements.push_back(top++);
 			elements.push_back(bottom++);
+
 		}
 	}
 

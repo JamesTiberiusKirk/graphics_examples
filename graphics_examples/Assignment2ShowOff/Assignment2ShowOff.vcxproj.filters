@@ -34,6 +34,12 @@
     <Filter Include="Source Files\camera">
       <UniqueIdentifier>{890ea8db-c0d8-4a17-8746-ffd1cb4bd60c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\skybox">
+      <UniqueIdentifier>{104b0e73-1c48-434d-9283-ca998bca1d67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\shaders\skybox">
+      <UniqueIdentifier>{961cddd2-233f-45ff-915e-20b9359b9b18}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -45,14 +51,17 @@
     <ClCompile Include="tiny_loader_texture.cpp">
       <Filter>Source Files\tiny_loader</Filter>
     </ClCompile>
-    <ClCompile Include="terrain.cpp">
-      <Filter>Source Files\terrain</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\common\wrapper_glfw.cpp">
       <Filter>Source Files\glfw_wrapper</Filter>
     </ClCompile>
     <ClCompile Include="camera.cpp">
       <Filter>Source Files\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="terrain.cpp">
+      <Filter>Source Files\terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="skybox.cpp">
+      <Filter>Source Files\skybox</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -62,31 +71,43 @@
     <None Include="shaders\main.vert">
       <Filter>Source Files\shaders</Filter>
     </None>
+    <None Include="shaders\skybox\skybox.frag">
+      <Filter>Source Files\shaders\skybox</Filter>
+    </None>
+    <None Include="shaders\skybox\skybox.vert">
+      <Filter>Source Files\shaders\skybox</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\common\cube_tex.h">
-      <Filter>Source Files\shapes</Filter>
-    </ClInclude>
-    <ClInclude Include="tiny_loader_texture.h">
-      <Filter>Source Files\tiny_loader</Filter>
-    </ClInclude>
-    <ClInclude Include="terrain.h">
-      <Filter>Source Files\terrain</Filter>
-    </ClInclude>
-    <ClInclude Include="texture.h">
-      <Filter>Source Files\texture</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\common\wrapper_glfw.h">
-      <Filter>Source Files\glfw_wrapper</Filter>
-    </ClInclude>
-    <ClInclude Include="camera.h">
-      <Filter>Source Files\camera</Filter>
-    </ClInclude>
     <ClInclude Include="config.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="globals.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\wrapper_glfw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cube_tex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="terrain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tiny_loader_texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="skybox.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
