@@ -4,10 +4,9 @@
 /* Generic constructor which needs paths for textures files, vertex and frag shaders. */
 SkyBox::SkyBox(const std::vector<std::string> textureFilesPath, const char* vertShaderPath, const char* fragShaderPath)
 {
-    program = new Program(vertShaderPath,fragShaderPath);
+    program = new ShaderProgram(vertShaderPath,fragShaderPath);
     float vertices[] = 
     {
-        // positions          
         -1.0f,  1.0f, -1.0f,
         -1.0f, -1.0f, -1.0f,
          1.0f, -1.0f, -1.0f,

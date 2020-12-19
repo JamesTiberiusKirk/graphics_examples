@@ -31,7 +31,7 @@ inline std::string readFile(const char *filePath)
 
 
 /* Generic constructor which takes in shader paths. */
-Program::Program(const char* vertPath, const char* fragPath)
+ShaderProgram::ShaderProgram(const char* vertPath, const char* fragPath)
 {
 	try
 	{
@@ -45,13 +45,13 @@ Program::Program(const char* vertPath, const char* fragPath)
 	}
 }
 
-void Program::use()
+void ShaderProgram::use()
 {
 	glUseProgram(uid);
 }
 
 /* Loads from file then passes to buildShader */
-GLuint Program::loadShaderFromFile(const char* vertPath, const char* fragPath)
+GLuint ShaderProgram::loadShaderFromFile(const char* vertPath, const char* fragPath)
 {
 	GLuint vertShader, fragShader;
 
@@ -85,7 +85,7 @@ GLuint Program::loadShaderFromFile(const char* vertPath, const char* fragPath)
 }
 
 /* Builds the shader from text string */
-GLuint Program::buildShader(GLenum shaderType, const std::string &shaderText)
+GLuint ShaderProgram::buildShader(GLenum shaderType, const std::string &shaderText)
 {
 	GLuint shader = glCreateShader(shaderType);
 	const char *strFileData = shaderText.c_str();

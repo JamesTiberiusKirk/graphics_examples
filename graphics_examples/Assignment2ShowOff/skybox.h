@@ -15,7 +15,7 @@ public:
 	GLuint viewId, projectionId;
 	CubemapTexture *skyTex;
 	Camera *cam;
-	Program *program;
+	ShaderProgram *program;
 	GLuint vao, vbo;
 
 	SkyBox(const  std::vector<std::string> textureFiles, const char* vertShaderPath, const char* fragShaderPath);

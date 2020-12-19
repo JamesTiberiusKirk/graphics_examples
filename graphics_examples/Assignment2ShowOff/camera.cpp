@@ -1,67 +1,77 @@
 #include "camera.h"
 
-/*
-TODO:
-	- Ideally the aspect ratio should be static
-	- Make a cam position switcher between different views
-	- Figure out the maths to move camera towards the lookat vector
-*/
+Camera::Camera(glm::vec3 position, glm::vec3 up, GLfloat yaw, GLfloat pitch)
+	: front(glm::vec3(0.0f, 0.0f, -1.0f)),
+	movementSpeed(SPEED),
+	mouseSensitivity(SENSITIVITY),
+	zoom(ZOOM)
+{
+	pos = position;
+	worldUp = up;
+	yaw = yaw;
+	pitch = pitch;
+	updateVecs();
+}
 
-/* Just a default constructor. */
-//Camera::Camera(Program *newPorgram)
-//	:	program(newPorgram)
-//{
-//	lookAt.position = glm::vec3(0.0f, 0.0f, 0.5f);
-//	lookAt.angle = glm::vec3(0.0f, 0.0f, 0.0f);
-//	lookAt.headsup = glm::vec3(0.0f, 1.0f, 0.0f);
-//	init();
-//}
-//
-///* Constructor with a custom cam vecs. */
-//Camera::Camera(Program *newProgram, const CameraVecs newCamVecs)
-//	:	program(newProgram),
-//		lookAt(newCamVecs)
-//{
-//	init();
-//}
-//
-///* This function initialises the uniforms */
-//void Camera::init()
-//{
-//	uniforms.view = glGetUniformLocation(program->uid, "view");
-//	uniforms.projection = glGetUniformLocation(program->uid, "projection");
-//}
-//
-///* The function which updates the cam every frame. */
-//void Camera::draw(const bool removeTranslation) 
-//{
-//	//Defining the projection model and passing it to the shader
-//	glm::mat4 projection = glm::perspective(glm::radians(FOV), aspectRatio, 0.1f, 100.0f);
-//	glUniformMatrix4fv(uniforms.projection, 1, GL_FALSE, &projection[0][0]);
-//
-//	lookAt.position = glm::vec3(0.0f, 0.0f, 0.5f);
-//	lookAt.angle = glm::vec3(0.0f, 0.0f, 0.0f);
-//	lookAt.headsup = glm::vec3(0.0f, 1.0f, 0.0f);
-//
-//
-//	lookAt.position += moveBy;
-//	lookAt.angle += lookMoveBy + moveBy;
-//
-//	//lookAt.position += moveBy + lookAt.angle;
-//	//lookAt.angle += lookMoveBy + moveBy;
-//
-//	//std::cout << lookAt.position.x << std::endl;
-//	glm::mat4 view = glm::lookAt(lookAt.position, lookAt.angle, lookAt.headsup);
-//	if (removeTranslation)
-//		view = glm::mat4(glm::mat3(view));
-//
-//	glUniformMatrix4fv(uniforms.view, 1, GL_FALSE, &view[0][0]);
-//}
-//
-///* Funcion to move the camera postion and angle. */
-//void Camera::moveCam(glm::vec3 moveByVec, glm::vec3 angleByVec)
-//{
-//	moveBy = moveByVec;
-//	lookMoveBy = angleByVec;
-//}
+void Camera::processKeyboard(CameraMovement direction, GLfloat deltaTime)
+{
+	GLfloat velocity = movementSpeed * deltaTime;
+	if (direction == FORWARD)
+		pos += front * velocity;
+	if (direction == BACKWARD)
+		pos -= front * velocity;
+	if (direction == LEFT)
+		pos -= right * velocity;
+	if (direction == RIGHT)
+		pos += right * velocity;
+	if (direction == UP)
+		pos += up * velocity;
+	if (direction == DOWN)
+		pos += -up * velocity;
+}
+
+void Camera::processMouseMovement(float xoffset, GLfloat yoffset, GLboolean constrainPitch)
+{
+	xoffset *= mouseSensitivity;
+	yoffset *= mouseSensitivity;
+
+	yaw += xoffset;
+	pitch += yoffset;
+
+	// make sure that when pitch is out of bounds, screen doesn't get flipped
+	if (constrainPitch)
+	{
+		if (pitch > 89.0f)
+			pitch = 89.0f;
+		if (pitch < -89.0f)
+			pitch = -89.0f;
+	}
+
+	// update Front, Right and Up Vectors using the updated Euler angles
+	updateVecs();
+}
+
+
+void Camera::processMouseScroll(float yoffset)
+{
+	zoom -= (float)yoffset;
+	if (zoom < 1.0f)
+		zoom = 1.0f;
+	if (zoom > 45.0f)
+		zoom = 45.0f;
+}
+
+void Camera::updateVecs()
+{
+	// calculate the new Front vector
+	glm::vec3 f;
+	f.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	f.y = sin(glm::radians(pitch));
+	f.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	front = glm::normalize(f);
+
+	// re-calculate the Right and Up vector
+	right = glm::normalize(glm::cross(front, worldUp));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+	up = glm::normalize(glm::cross(right, front));
+}
 

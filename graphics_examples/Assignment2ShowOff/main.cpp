@@ -22,6 +22,7 @@ if you prefer */
 #include "skybox.h"
 #include "program.h"
 #include "texture.h"
+#include "sphere_tex.h"
 
 
 #include "config.h"
@@ -30,7 +31,6 @@ if you prefer */
 
 /* --------------------- */
 
-// TODO NEED TO MAKE THIS STATIC GLOBALLY SOMEHOW
 GLfloat aspectRatio;
 
 /* OpenGL specific variables */
@@ -40,18 +40,20 @@ GLuint vao;
 GLuint drawmode = 0;
 GLfloat modelScale;
 
-Texture terrainTex;
+Texture* terrainTex;
 Terrain* terrain;
 SkyBox* skyBox;
-Program* mainProgram;
-Program* skyboxShader;
+ShaderProgram* mainProgram;
+ShaderProgram* skyboxShader;
+Texture* sunTex;
+Sphere* sun;
 
 /* For time. */
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 
 /* For camera. */
-Camera cam(glm::vec3(0.0f, 0.0f, 6.0f));
+Camera cam(glm::vec3(0.0f, 0.0f, 10.0f));
 GLfloat lastX = 1920.f / 2.f;
 GLfloat lastY = 1080.f / 2.f;
 bool firstMouse = true;
@@ -85,15 +87,17 @@ void init(GLWrapper* glw)
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
-	// Defining all the uniforms
-	// For the Cam setup
-
-
-	skyBox = new SkyBox( skyBoxTextureFilePaths,"shaders\\skybox\\skybox.vert", "shaders\\skybox\\skybox.frag");
+	//skyBox = new SkyBox( skyBoxTextureFilePaths,"shaders\\skybox\\skybox.vert", "shaders\\skybox\\skybox.frag");
 
 	// For creating terrain
-	terrainTex.initTexture("textures\\grass.jpg");
+	terrainTex = new Texture("textures\\grass.jpg");
 	initTerrain();
+
+	// Fon the sun
+	sunTex = new Texture("textures\\sun.jpg");
+	sun = new Sphere(true);
+	sun->makeSphere(65,65);
+
 }
 
 /* Function called for drawing every frame. */
@@ -133,24 +137,23 @@ void draw() {
 	model.push(glm::mat4(1.0f));
 
 	//Translations which apply to all of out objects
-	model.top() = glm::translate(model.top(), glm::vec3(0, -1, 0));
+	model.top() = glm::translate(model.top(), glm::vec3(0, 0, 0));
 	//glUniformMatrix4fv(modelId, 1, GL_FALSE, &model.top()[0][0]);
 	mainProgram->passMat4("model", model.top());
 
 	// For drawing terrain
-	terrainTex.bindTexture();
+	terrainTex->bindTexture();
 	terrain->drawObject(drawmode);
 
+	sunTex->bindTexture();
+	sun->drawSphere(0);
+
 	model.pop();
+
 	glUseProgram(0);
 
 	// ------------------- Sky Box ------------------------
-
-	//model.push(glm::mat4(1.0f));
-	//model.top() = glm::scale(model.top(), glm::vec3(10));
-	//mainProgram->passMat4("model", model.top());
-	skyBox->draw(view, projection);
-	//model.pop();
+	//skyBox->draw(view, projection);
 	// ----------------------------------------------------
 }
 
@@ -192,7 +195,7 @@ void draw() {
 //	if (key == '[') y_rotation_inc -= 0.1f;
 //}
 
-/* This is the hadnler called when the window is resised. */
+/* Window resize handler. */
 void resiseHandler(GLFWwindow* window, int w, int h) {
 	glViewport(0, 0, (GLsizei)w, (GLsizei)h);
 
@@ -201,7 +204,7 @@ void resiseHandler(GLFWwindow* window, int w, int h) {
 }
 
 
-// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
+/* Keyboard input handler. */
 void keyHandler(GLFWwindow* window, int key, int s, int action, int mods)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -229,7 +232,7 @@ void keyHandler(GLFWwindow* window, int key, int s, int action, int mods)
 //	glViewport(0, 0, width, height);
 //}
 
-// glfw: whenever the mouse moves, this callback is called
+/* Mouse movement handler. */
 void mouseHandler(GLFWwindow* window, double xpos, double ypos)
 {
 	if (firstMouse)
@@ -248,7 +251,7 @@ void mouseHandler(GLFWwindow* window, double xpos, double ypos)
 	cam.processMouseMovement(xoffset, yoffset);
 }
 
-// glfw: whenever the mouse scroll wheel scrolls, this callback is called
+/* Mouse scroll handler. */
 void scrollHandler(GLFWwindow* window, double xoffset, double yoffset)
 {
 	cam.processMouseScroll(yoffset);
@@ -258,7 +261,7 @@ void scrollHandler(GLFWwindow* window, double xoffset, double yoffset)
 /* Entry point. */
 int main(void) {
 	GLWrapper* glw = new GLWrapper(1920, 1080, "Assignemt1");
-	mainProgram = new Program("shaders\\main.vert","shaders\\main.frag");
+	mainProgram = new ShaderProgram("shaders\\main.vert","shaders\\main.frag");
 
 	if (!ogl_LoadFunctions())
 	{

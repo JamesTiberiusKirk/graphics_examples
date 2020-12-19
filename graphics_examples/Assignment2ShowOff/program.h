@@ -6,14 +6,14 @@
 
 #include "common.h"
 
-class Program
+class ShaderProgram
 {
 public:
 
 	GLuint uid;
 
-	Program(const char* vertPath, const char* fragPath);
-	~Program();
+	ShaderProgram(const char* vertPath, const char* fragPath);
+	~ShaderProgram();
 
 	void use();
 	void passMat4(const std::string& name, const glm::mat4& mat) const
