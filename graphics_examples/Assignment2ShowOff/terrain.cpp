@@ -11,12 +11,11 @@ using namespace glm;
 /* Define the vertex attributes for vertex positions and normals. 
    Make these match your application and vertex shader
    You might also want to add texture coordinates */
-Terrain::Terrain(int octaves, GLfloat freq, GLfloat scale, const char *textFilename)
+Terrain::Terrain(int octaves, GLfloat freq, GLfloat scale)
 {
 	attribute_v_coord = 0;
-	attribute_v_colour = 1;
-	attribute_v_normal = 2;
-	attribute_v_texcoord = 3;
+	attribute_v_normal = 1;
+	attribute_v_colour = 2;
 	xsize = 0;	// Set to zero because we haven't created the heightfield array yet
 	zsize = 0;	
 	perlin_octaves = octaves;
@@ -61,36 +60,6 @@ void Terrain::createObject()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_mesh_elements);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, elements.size()* sizeof(GLuint), &(elements[0]), GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	// Generate a buffer for texture coordinates
-	try
-	{
-		terrainText.initTexture("textures\\earth.png");
-		terrainText.unbindTexture();
-
-		terrainText.bindTexture();
-
-		glEnable(GL_TEXTURE_2D);
-		glGenBuffers(1, &terrainText.textureId);
-
-		glBindTexture(GL_TEXTURE_2D, terrainText.textureId);
-		glBindBuffer(GL_ARRAY_BUFFER, terrainText.textureId);
-
-		glEnableVertexAttribArray(terrainText.textureId);
-		glVertexAttribPointer(attribute_v_texcoord, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
-
-		terrainText.unbindTexture();
-
-		//glBufferData(GL_ARRAY_BUFFER, textCoords.size() * sizeof(GLuint), &(textCoords[0]), GL_STATIC_DRAW);
-		//glBindBuffer(GL_ARRAY_BUFFER, 0);
-	}
-	catch (std::exception& e)
-	{
-		std::cout << e.what() << std::endl;
-		std::cin.ignore();
-		exit(1); // 1 to tell the system that there was an error
-	}
-
 }
 
 /* Enable vertex attributes and draw object
@@ -99,6 +68,7 @@ create object but this method is more general
 */
 void Terrain::drawObject(int drawmode)
 {
+	//terrainText.bindTexture();
 	int size;	// Used to get the byte size of the element (vertex index) array
 
 	// Describe our vertices array to OpenGL (it can't guess its format automatically)
@@ -138,12 +108,6 @@ void Terrain::drawObject(int drawmode)
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_mesh_elements); 
 	glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
-	
-
-	// For binging text
-	//glEnableVertexAttribArray(attribute_v_texcoord);
-	//glBindBuffer(GL_ARRAY_BUFFER, texCoordsObjectId);
-	//glVertexAttribPointer(attribute_v_texcoord, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 	// Enable this line to show model in wireframe
 	if (drawmode == 1)

@@ -12,13 +12,15 @@ inline std::string readFile(const char *filePath)
 	std::string content;
 	std::ifstream fileStream(filePath, std::ios::in);
 
-	if (!fileStream.is_open()) {
+	if (!fileStream.is_open())
+	{
 		std::cerr << "Could not read file " << filePath << ". File does not exist." << std::endl;
 		return "";
 	}
 
 	std::string line = "";
-	while (!fileStream.eof()) {
+	while (!fileStream.eof())
+	{
 		std::getline(fileStream, line);
 		content.append(line + "\n");
 	}
@@ -33,7 +35,7 @@ Program::Program(const char* vertPath, const char* fragPath)
 {
 	try
 	{
-		this->uid = loadShader(vertPath, fragPath);
+		this->uid = loadShaderFromFile(vertPath, fragPath);
 	}
 	catch (std::exception& e)
 	{
@@ -43,9 +45,13 @@ Program::Program(const char* vertPath, const char* fragPath)
 	}
 }
 
+void Program::use()
+{
+	glUseProgram(uid);
+}
 
 /* Loads from file then passes to buildShader */
-GLuint Program::loadShader(const char* vertPath, const char* fragPath)
+GLuint Program::loadShaderFromFile(const char* vertPath, const char* fragPath)
 {
 	GLuint vertShader, fragShader;
 
@@ -115,3 +121,4 @@ GLuint Program::buildShader(GLenum shaderType, const std::string &shaderText)
 
 	return shader;
 }
+

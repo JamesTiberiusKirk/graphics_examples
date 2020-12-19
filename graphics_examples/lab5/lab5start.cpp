@@ -70,7 +70,7 @@ using namespace glm;
 
 class Texture {
 public:
-	unsigned int textureId;
+	unsigned int uid;
 	unsigned char* imageData;
 	int width, height, nrChannels;
 
@@ -82,8 +82,8 @@ public:
 		// Loading the image
 		imageData = stbi_load(filename, &width, &height, &nrChannels, 0);
 
-		glGenTextures(1, &textureId);
-		glBindTexture(GL_TEXTURE_2D, textureId);
+		glGenTextures(1, &uid);
+		glBindTexture(GL_TEXTURE_2D, uid);
 
 		if (imageData)
 		{
@@ -128,7 +128,7 @@ public:
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		}
-		glBindTexture(GL_TEXTURE_2D, textureId);
+		glBindTexture(GL_TEXTURE_2D, uid);
 	}
 
 	/*

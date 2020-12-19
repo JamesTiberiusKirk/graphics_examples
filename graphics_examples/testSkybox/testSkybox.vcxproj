@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{cef43a02-d416-48c5-bcd3-5be6f4ef4151}</ProjectGuid>
-    <RootNamespace>Assignment2ShowOff</RootNamespace>
+    <ProjectGuid>{13ad7244-0933-49b4-8e82-a8aa41b41f0e}</ProjectGuid>
+    <RootNamespace>testSkybox</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -141,35 +141,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\common\cube_tex.cpp" />
-    <ClCompile Include="camera.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="program.cpp" />
-    <ClCompile Include="skybox.cpp" />
-    <ClCompile Include="terrain.cpp" />
-    <ClCompile Include="tiny_loader_texture.cpp" />
-    <ClCompile Include="wrapper_glfw.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\main.frag" />
-    <None Include="shaders\main.old.frag" />
-    <None Include="shaders\main.old.vert" />
-    <None Include="shaders\main.vert" />
-    <None Include="shaders\skybox\skybox.frag" />
-    <None Include="shaders\skybox\skybox.vert" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\common\cube_tex.h" />
     <ClInclude Include="camera.h" />
-    <ClInclude Include="common.h" />
-    <ClInclude Include="config.h" />
-    <ClInclude Include="globals.h" />
-    <ClInclude Include="program.h" />
-    <ClInclude Include="skybox.h" />
-    <ClInclude Include="terrain.h" />
-    <ClInclude Include="texture.h" />
-    <ClInclude Include="tiny_loader_texture.h" />
-    <ClInclude Include="wrapper_glfw.h" />
+    <ClInclude Include="shader_m.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cubemap.frag" />
+    <None Include="cubemap.vert" />
+    <None Include="skybox.frag" />
+    <None Include="skybox.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

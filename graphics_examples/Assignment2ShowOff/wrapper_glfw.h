@@ -26,8 +26,7 @@ private:
 	GLFWwindow* window;
 
 public:
-	Program* program;
-	GLWrapper(int width, int height, const char *title, const char *vertShaderPath, const char *fragShaderPath);
+	GLWrapper(int width, int height, const char *title);
 	~GLWrapper();
 
 	void setFPS(double fps) {
@@ -41,6 +40,8 @@ public:
 	void setReshapeCallback(void(*f)(GLFWwindow* window, int w, int h));
 	void setKeyCallback(void(*f)(GLFWwindow* window, int key, int scancode, int action, int mods));
 	void setErrorCallback(void(*f)(int error, const char* description));
+	void setMouseCallback(void(*f)(GLFWwindow* window, double xpos, double ypos));
+	void setScrollWheelCallback(void(*f)(GLFWwindow* window, double xoffset, double yoffset));
 
 	int eventLoop();
 	GLFWwindow* getWindow();

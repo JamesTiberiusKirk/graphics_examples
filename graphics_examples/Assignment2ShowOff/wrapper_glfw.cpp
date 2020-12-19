@@ -16,7 +16,7 @@
 using namespace std;
 
 /* Constructor for wrapper object */
-GLWrapper::GLWrapper(int width, int height, const char *title, const char* vertShaderPath, const char* fragShaderPath)
+GLWrapper::GLWrapper(int width, int height, const char *title)
 {
 
 	this->width = width;
@@ -63,8 +63,6 @@ GLWrapper::GLWrapper(int width, int height, const char *title, const char* vertS
 	glfwSetWindowTitle(window, this->title);
 
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, true);
-
-	program = new Program(vertShaderPath,fragShaderPath);
 }
 
 
@@ -99,9 +97,9 @@ void GLWrapper::displayVersion()
 }
 
 /*
-GLFW_Main function normally starts the windows system, calls any init routines
-and then starts the event loop which runs until the program ends
-*/
+ * GLFW_Main function normally starts the windows system, calls any init routines
+ * and then starts the event loop which runs until the program ends
+ */
 int GLWrapper::eventLoop()
 {
 	// Main loop
@@ -140,4 +138,14 @@ void GLWrapper::setReshapeCallback(void(*func)(GLFWwindow* window, int w, int h)
 void GLWrapper::setKeyCallback(void(*func)(GLFWwindow* window, int key, int scancode, int action, int mods))
 {
 	glfwSetKeyCallback(window, func);
+}
+
+void GLWrapper::setMouseCallback(void(*f)(GLFWwindow* window, double xpos, double ypos))
+{
+	glfwSetCursorPosCallback(window, f);
+}
+
+void  GLWrapper::setScrollWheelCallback(void(*f)(GLFWwindow* window, double xoffset, double yoffset))
+{
+	glfwSetScrollCallback(window, f);
 }

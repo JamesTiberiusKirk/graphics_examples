@@ -21,6 +21,8 @@ if you prefer */
 #include "camera.h"
 #include "skybox.h"
 #include "program.h"
+#include "texture.h"
+
 
 #include "config.h"
 
@@ -34,41 +36,43 @@ GLfloat aspectRatio;
 /* OpenGL specific variables */
 GLuint vao;
 
-/* Shader variables (Unifoirms) */
-GLuint modelId, viewId, projectionId;
-
 /* Object instances */
 GLuint drawmode = 0;
 GLfloat modelScale;
 
+Texture terrainTex;
 Terrain* terrain;
-Camera* cam;
 SkyBox* skyBox;
 Program* mainProgram;
+Program* skyboxShader;
 
+/* For time. */
+GLfloat deltaTime = 0.0f;
+GLfloat lastFrame = 0.0f;
 
-/* Used for movement */
-GLfloat cam_x_inc, cam_y_inc, cam_z_inc = 0; // For moving the position of the camera
-GLfloat cam_angle_x_inc, cam_angle_y_inc, cam_angle_z_inc = 0; // For moving the angle of the camera
-
-GLfloat y_rotation, y_rotation_inc = 0;
-
+/* For camera. */
+Camera cam(glm::vec3(0.0f, 0.0f, 6.0f));
+GLfloat lastX = 1920.f / 2.f;
+GLfloat lastY = 1080.f / 2.f;
+bool firstMouse = true;
 
 std::vector<std::string> skyBoxTextureFilePaths =
 {
-	"textures\\cubemap\\right.jpg",
-	"textures\\cubemap\\left.jpg",
-	"textures\\cubemap\\top.jpg",
-	"textures\\cubemap\\bottom.jpg",
-	"textures\\cubemap\\front.jpg",
-	"textures\\cubemap\\back.jpg"
+	"textures\\skybox\\right.jpg",
+	"textures\\skybox\\left.jpg",
+	"textures\\skybox\\top.jpg",
+	"textures\\skybox\\bottom.jpg",
+	"textures\\skybox\\front.jpg",
+	"textures\\skybox\\back.jpg"
 };
 
 void initTerrain()
 {
-	terrain = new Terrain(3.0f, 1.0f, 6.0f, "textures\\earth.png");
+	terrain = new Terrain(3.0f, 1.0f, 6.0f);
 	terrain->createTerrain(600.f, 600.f, 12.f, 12.f);
-	terrain->setColour(glm::vec3(0, 1, 1));
+	terrain->defineSeaLevel(-5);
+	terrain->setColourBasedOnHeight();
+	//terrain->setColour(glm::vec3(0, 1, 1));
 	terrain->createObject();
 }
 
@@ -82,19 +86,23 @@ void init(GLWrapper* glw)
 	glBindVertexArray(vao);
 
 	// Defining all the uniforms
-	modelId = glGetUniformLocation(mainProgram->uid, "model");
 	// For the Cam setup
-	cam = new Camera(mainProgram);
 
 
 	skyBox = new SkyBox( skyBoxTextureFilePaths,"shaders\\skybox\\skybox.vert", "shaders\\skybox\\skybox.frag");
 
 	// For creating terrain
+	terrainTex.initTexture("textures\\grass.jpg");
 	initTerrain();
 }
 
 /* Function called for drawing every frame. */
 void draw() {
+	// per-frame time logic
+	// --------------------
+	GLfloat currentFrame = glfwGetTime();
+	deltaTime = currentFrame - lastFrame;
+	lastFrame = currentFrame;
 
 	// ------------------- Basic setup -------------------
 
@@ -108,19 +116,14 @@ void draw() {
 	glEnable(GL_DEPTH_TEST);
 
 	// Define the shader program to be used
-	glUseProgram(mainProgram->uid);
+	mainProgram->use();
 
 	// ------------------ Setting up camera -------------------
 
-	// Camera movement changes
-	cam->setAspectRatio(aspectRatio);
-	//Camera::setAspectRatio(aspectRatio);
-
-	// Camera movement changes
-	glm::vec3 camMoveBy = glm::vec3(cam_x_inc, cam_y_inc, cam_z_inc);
-	glm::vec3 camLookMoveBy = glm::vec3(cam_angle_x_inc, cam_angle_y_inc, cam_angle_z_inc);
-	cam->moveCam(camMoveBy, camLookMoveBy);
-	cam->draw();
+	glm::mat4 view = cam.getViewMatrix();
+	glm::mat4 projection = glm::perspective(glm::radians(cam.zoom), aspectRatio, 0.1f, 100.0f);
+	mainProgram->passMat4("view", view);
+	mainProgram->passMat4("projection", projection);
 
 	// ------------------- Tralslations -------------------
 
@@ -129,83 +132,133 @@ void draw() {
 	// Indentity matix
 	model.push(glm::mat4(1.0f));
 
-	// Translations which apply to all of out objects
+	//Translations which apply to all of out objects
 	model.top() = glm::translate(model.top(), glm::vec3(0, -1, 0));
-	glUniformMatrix4fv(modelId, 1, GL_FALSE, &model.top()[0][0]);
+	//glUniformMatrix4fv(modelId, 1, GL_FALSE, &model.top()[0][0]);
+	mainProgram->passMat4("model", model.top());
 
 	// For drawing terrain
+	terrainTex.bindTexture();
 	terrain->drawObject(drawmode);
 
+	model.pop();
 	glUseProgram(0);
-
-	// Modify animation vars
-	y_rotation += y_rotation_inc;
 
 	// ------------------- Sky Box ------------------------
 
-	glDepthFunc(GL_LEQUAL);
-	glUseProgram(skyBox->program->uid);
-
-	skyBox->draw();
-	glDisableVertexAttribArray(0);
-
-	glUseProgram(0);
-	glDepthFunc(GL_LESS);
-
+	//model.push(glm::mat4(1.0f));
+	//model.top() = glm::scale(model.top(), glm::vec3(10));
+	//mainProgram->passMat4("model", model.top());
+	skyBox->draw(view, projection);
+	//model.pop();
 	// ----------------------------------------------------
 }
 
-/* This is the handler called for any key input. */
-void key_handler(GLFWwindow* window, int key, int s, int action, int mods) {
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, GL_TRUE);
-
-	/* Cycle between drawing vertices, mesh and filled polygons */
-	if (key == ',' && action != GLFW_PRESS)
-	{
-		drawmode++;
-		if (drawmode > 2) drawmode = 0;
-	}
-
-	if (key == 'W')
-		cam_z_inc -= CAM_MOVEMENT_SPEED; // Move forward
-	if (key == 'S')
-		cam_z_inc += CAM_MOVEMENT_SPEED; // Move backword
-	if (key == 'D')
-		cam_x_inc += CAM_MOVEMENT_SPEED; // Move right
-	if (key == 'A')
-		cam_x_inc -= CAM_MOVEMENT_SPEED; // Move left
-	if (key == GLFW_KEY_SPACE)
-		cam_y_inc += CAM_MOVEMENT_SPEED; // Move up
-	if (key == GLFW_KEY_LEFT_CONTROL)
-		cam_y_inc -= CAM_MOVEMENT_SPEED; // Move down
-
-	if (key == GLFW_KEY_RIGHT)
-		cam_angle_x_inc += CAM_MOVEMENT_SPEED; // Look right
-	if (key == GLFW_KEY_LEFT)
-		cam_angle_x_inc -= CAM_MOVEMENT_SPEED; // Look left
-	if (key == GLFW_KEY_UP)
-		cam_angle_y_inc += CAM_MOVEMENT_SPEED; // Look up
-	if (key == GLFW_KEY_DOWN)
-		cam_angle_y_inc -= CAM_MOVEMENT_SPEED; // Look down
-
-	if (key == ']') y_rotation_inc += 0.1f;
-	if (key == '[') y_rotation_inc -= 0.1f;
-}
+///* This is the handler called for any key input. */
+//void key_handler(GLFWwindow* window, int key, int s, int action, int mods) {
+//	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+//		glfwSetWindowShouldClose(window, GL_TRUE);
+//
+//	/* Cycle between drawing vertices, mesh and filled polygons */
+//	if (key == ',' && action != GLFW_PRESS)
+//	{
+//		drawmode++;
+//		if (drawmode > 2) drawmode = 0;
+//	}
+//
+//	if (key == 'W')
+//		cam_z_inc -= CAM_MOVEMENT_SPEED; // Move forward
+//	if (key == 'S')
+//		cam_z_inc += CAM_MOVEMENT_SPEED; // Move backword
+//	if (key == 'D')
+//		cam_x_inc += CAM_MOVEMENT_SPEED; // Move right
+//	if (key == 'A')
+//		cam_x_inc -= CAM_MOVEMENT_SPEED; // Move left
+//	if (key == GLFW_KEY_SPACE)
+//		cam_y_inc += CAM_MOVEMENT_SPEED; // Move up
+//	if (key == GLFW_KEY_LEFT_CONTROL)
+//		cam_y_inc -= CAM_MOVEMENT_SPEED; // Move down
+//
+//	if (key == GLFW_KEY_RIGHT)
+//		cam_angle_x_inc += CAM_MOVEMENT_SPEED; // Look right
+//	if (key == GLFW_KEY_LEFT)
+//		cam_angle_x_inc -= CAM_MOVEMENT_SPEED; // Look left
+//	if (key == GLFW_KEY_UP)
+//		cam_angle_y_inc += CAM_MOVEMENT_SPEED; // Look up
+//	if (key == GLFW_KEY_DOWN)
+//		cam_angle_y_inc -= CAM_MOVEMENT_SPEED; // Look down
+//
+//	if (key == ']') y_rotation_inc += 0.1f;
+//	if (key == '[') y_rotation_inc -= 0.1f;
+//}
 
 /* This is the hadnler called when the window is resised. */
-void resise_handler(GLFWwindow* window, int w, int h) {
+void resiseHandler(GLFWwindow* window, int w, int h) {
 	glViewport(0, 0, (GLsizei)w, (GLsizei)h);
 
 	// Store aspect ratio to use for our perspective projection
 	aspectRatio = float(w) / float(h);
 }
 
+
+// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
+void keyHandler(GLFWwindow* window, int key, int s, int action, int mods)
+{
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
+
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		cam.processKeyboard(FORWARD, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		cam.processKeyboard(BACKWARD, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		cam.processKeyboard(LEFT, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		cam.processKeyboard(RIGHT, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+		cam.processKeyboard(UP, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+		cam.processKeyboard(DOWN, deltaTime);
+}
+
+//// glfw: whenever the window size changed (by OS or user resize) this callback function executes
+//void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+//{
+//	// make sure the viewport matches the new window dimensions; note that width and 
+//	// height will be significantly larger than specified on retina displays.
+//	glViewport(0, 0, width, height);
+//}
+
+// glfw: whenever the mouse moves, this callback is called
+void mouseHandler(GLFWwindow* window, double xpos, double ypos)
+{
+	if (firstMouse)
+	{
+		lastX = xpos;
+		lastY = ypos;
+		firstMouse = false;
+	}
+
+	float xoffset = xpos - lastX;
+	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+
+	lastX = xpos;
+	lastY = ypos;
+
+	cam.processMouseMovement(xoffset, yoffset);
+}
+
+// glfw: whenever the mouse scroll wheel scrolls, this callback is called
+void scrollHandler(GLFWwindow* window, double xoffset, double yoffset)
+{
+	cam.processMouseScroll(yoffset);
+}
+
+
 /* Entry point. */
 int main(void) {
-	//GLWrapper *glw = new GLWrapper(1024, 778, "Assignemt1");;
-	GLWrapper* glw = new GLWrapper(1920, 1080, "Assignemt1", "shaders\\main.vert","shaders\\main.frag");
-	mainProgram = glw->program;
+	GLWrapper* glw = new GLWrapper(1920, 1080, "Assignemt1");
+	mainProgram = new Program("shaders\\main.vert","shaders\\main.frag");
 
 	if (!ogl_LoadFunctions())
 	{
@@ -215,8 +268,10 @@ int main(void) {
 
 	// Register the callback functions
 	glw->setRenderer(draw);
-	glw->setKeyCallback(key_handler);
-	glw->setReshapeCallback(resise_handler);
+	glw->setKeyCallback(keyHandler);
+	glw->setMouseCallback(mouseHandler);
+	glw->setScrollWheelCallback(scrollHandler);
+	glw->setReshapeCallback(resiseHandler);
 
 	/* Output the OpenGL vendor and version */
 	glw->displayVersion();

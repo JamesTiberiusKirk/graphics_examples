@@ -9,7 +9,7 @@
 class Texture
 {
 public:
-	unsigned int textureId;
+	GLuint uid;
 	unsigned char* imageData;
 	int width, height, nrChannels;
 
@@ -23,8 +23,8 @@ public:
 
 		if (imageData) // To check if the image was loaded properly
 		{
-			glGenTextures(1, &textureId);
-			glBindTexture(GL_TEXTURE_2D, textureId);
+			glGenTextures(1, &uid);
+			glBindTexture(GL_TEXTURE_2D, uid);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imageData);
 			stbi_image_free(imageData);
 			glGenerateMipmap(GL_TEXTURE_2D);
@@ -38,42 +38,12 @@ public:
 
 	}
 
-	void initCubeMap(std::vector<std::string> file_paths) {
-		int width, height, nr_channels;
-		glGenTextures(1, &textureId);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
-
-		for (int i = 0; i < file_paths.size(); i++) {
-			unsigned char* data = stbi_load(file_paths[i].c_str(), &width, &height, &nr_channels, 0);
-
-			if (data) {
-				// create texture with attributes
-				// 2nd param defines the level
-				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-
-				// free the data after the texture is created
-				stbi_image_free(data);
-			}
-			else {
-				// free the data after the texture is created
-				stbi_image_free(data);
-				throw std::exception("File not found");
-			}
-		}
-		glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
-		/*glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);*/
-	}
-
 	/*
 	This is to bind the texture to the object.
 	*/
 	void bindTexture()
 	{
-		glBindTexture(GL_TEXTURE_2D, textureId);
+		glBindTexture(GL_TEXTURE_2D, uid);
 	}
 
 	/*
@@ -82,5 +52,48 @@ public:
 	void unbindTexture()
 	{
 		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+};
+
+
+class CubemapTexture
+{
+public:
+	GLuint uid;
+
+	CubemapTexture(std::vector<std::string> filePaths) 
+	{
+		glGenTextures(1, &uid);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, uid);
+
+		int width, height, nrChannels;
+		for (unsigned int i = 0; i < filePaths.size(); i++)
+		{
+			unsigned char* data = stbi_load(filePaths[i].c_str(), &width, &height, &nrChannels, 0);
+			std::cout << "Loaded " << filePaths[i] << " loaded. " << i + 1 << "/" << filePaths.size() << std::endl;
+			if (data)
+			{
+				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+					0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
+				);
+
+				stbi_image_free(data);
+			}
+			else
+			{
+				std::cout << "Cubemap tex failed to load at path: " << filePaths[i] << std::endl;
+				stbi_image_free(data);
+			}
+		}
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	}
+	void bindTexture(GLenum TextureUnit) 
+	{
+		glActiveTexture(TextureUnit);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, uid);
 	}
 };

@@ -13,7 +13,7 @@
 class Terrain
 {
 public:
-	Terrain(int octaves, GLfloat freq, GLfloat scale, const char *textFilename);
+	Terrain(int octaves, GLfloat freq, GLfloat scale);
 	~Terrain();
 
 	void calculateNoise();
@@ -53,14 +53,6 @@ public:
 	GLfloat perlin_scale;
 	GLfloat height_scale;
 	GLfloat sealevel;
-
-	// Additions for texture
-	//GLuint texCoordsObjectId;
-	GLuint attribute_v_texcoord;
-	//std::vector<GLuint> textCoords;
-	//char* terrainTexFileName;
-	Texture terrainText;
-	// ---------
 
 	float height_min, height_max;	// range of terrain heights
 };

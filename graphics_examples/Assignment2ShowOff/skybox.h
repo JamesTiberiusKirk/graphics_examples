@@ -13,7 +13,7 @@ class SkyBox
 {
 public:
 	GLuint viewId, projectionId;
-	Texture skyText;
+	CubemapTexture *skyTex;
 	Camera *cam;
 	Program *program;
 	GLuint vao, vbo;
@@ -21,6 +21,6 @@ public:
 	SkyBox(const  std::vector<std::string> textureFiles, const char* vertShaderPath, const char* fragShaderPath);
 	~SkyBox();
 
-	void draw();
+	void draw(glm::mat4 view, glm::mat4 projection);
 };
 
