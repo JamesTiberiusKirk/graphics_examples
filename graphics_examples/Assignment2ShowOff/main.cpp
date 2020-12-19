@@ -48,12 +48,17 @@ ShaderProgram* skyboxShader;
 Texture* sunTex;
 Sphere* sun;
 
+Texture* airplaneTex;
+TinyObjLoader* airplane;
+GLfloat airplaneFlight = 0;
+const GLfloat airplaneSpeed = 0.8f;
+
 /* For time. */
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 
 /* For camera. */
-Camera cam(glm::vec3(0.0f, 0.0f, 10.0f));
+Camera cam(glm::vec3(0.0f, 3.0f, 8.0f));
 GLfloat lastX = 1920.f / 2.f;
 GLfloat lastY = 1080.f / 2.f;
 bool firstMouse = true;
@@ -98,6 +103,11 @@ void init(GLWrapper* glw)
 	sun = new Sphere(true);
 	sun->makeSphere(65,65);
 
+
+	// For the airplane
+	airplaneTex = new Texture("textures\\crumpled-paper.jpg");
+	airplane = new TinyObjLoader();
+	airplane->load_obj("obj\\paper-airplane-exp.obj");
 }
 
 /* Function called for drawing every frame. */
@@ -137,20 +147,49 @@ void draw() {
 	model.push(glm::mat4(1.0f));
 
 	//Translations which apply to all of out objects
-	model.top() = glm::translate(model.top(), glm::vec3(0, 0, 0));
-	//glUniformMatrix4fv(modelId, 1, GL_FALSE, &model.top()[0][0]);
 	mainProgram->passMat4("model", model.top());
 
 	// For drawing terrain
 	terrainTex->bindTexture();
 	terrain->drawObject(drawmode);
+	terrainTex->unbindTexture();
 
-	sunTex->bindTexture();
-	sun->drawSphere(0);
+	model.push(model.top());
+	{
+		model.top() = glm::rotate(model.top(), glm::radians(airplaneFlight), glm::vec3(0,1,0));
+		model.top() = glm::translate(model.top(), glm::vec3(-3,2,0));
+		model.top() = glm::scale(model.top(), glm::vec3(0.08f, 0.08f, 0.08f));
+		model.top() = glm::rotate(model.top(), glm::radians(20.0f), glm::vec3(0,0,-1));
 
+		
+		mainProgram->passMat4("model", model.top());
+		//mainProgram->passVec4("texcoords", glm::vec4(1, 0, 1, 1));
+		airplaneTex->bindTexture();
+		airplane->drawObject(0);
+		airplaneTex->unbindTexture();
+	}
 	model.pop();
 
+	model.push(model.top());
+	{
+		glm::vec3 sunTranlsation = glm::vec3(-5, 5, -5);
+		model.top() = glm::translate(model.top(), sunTranlsation);
+		mainProgram->passMat4("model", model.top());
+		//glm::vec4 lightPos = view * glm::vec4(sunTranlsation, 1);
+		//mainProgram->passVec4("lightPos", glm::vec4(sunTranlsation, 1));
+
+		sunTex->bindTexture();
+		sun->drawSphere(0);
+		sunTex->unbindTexture();
+	}
+	model.pop();
+	
+
 	glUseProgram(0);
+
+
+	if (airplaneFlight == 360.0f) airplaneFlight = 0;
+	airplaneFlight -= airplaneSpeed;
 
 	// ------------------- Sky Box ------------------------
 	//skyBox->draw(view, projection);

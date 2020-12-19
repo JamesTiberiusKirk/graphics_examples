@@ -1,6 +1,6 @@
 #include "camera.h"
 
-Camera::Camera(glm::vec3 position, glm::vec3 up, GLfloat yaw, GLfloat pitch)
+Camera::Camera(glm::vec3 position, glm::vec3 up, GLfloat nyaw, GLfloat npitch)
 	: front(glm::vec3(0.0f, 0.0f, -1.0f)),
 	movementSpeed(SPEED),
 	mouseSensitivity(SENSITIVITY),
@@ -8,8 +8,8 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, GLfloat yaw, GLfloat pitch)
 {
 	pos = position;
 	worldUp = up;
-	yaw = yaw;
-	pitch = pitch;
+	yaw = nyaw;
+	pitch = npitch;
 	updateVecs();
 }
 

@@ -34,7 +34,7 @@ CubemapTexture::CubemapTexture(std::vector<std::string> filepaths)
 	for (unsigned int i = 0; i < filepaths.size(); i++)
 	{
 		unsigned char* data = stbi_load(filepaths[i].c_str(), &width, &height, &nrChannels, 0);
-		std::cout << "Loaded " << filepaths[i] << " loaded. " << i + 1 << "/" << filepaths.size() << std::endl;
+		std::cout << "Texture " << filepaths[i] << " loaded. " << i + 1 << "/" << filepaths.size() << std::endl;
 		if (data)
 		{
 			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,

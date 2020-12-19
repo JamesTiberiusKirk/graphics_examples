@@ -52,8 +52,8 @@ public:
     /* Default constructor with vectors. */
     Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3 u = glm::vec3(0.0f, 1.0f, 0.0f),
-        GLfloat yaw = YAW,
-        GLfloat pitch = PITCH);
+        GLfloat nyaw = YAW,
+        GLfloat npitch = PITCH);
 
     /* Generate lookAt matrix. */
     glm::mat4 getViewMatrix()

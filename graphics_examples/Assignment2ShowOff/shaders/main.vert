@@ -13,6 +13,7 @@ layout(location = 2) in vec2 texcoord;
 uniform mat4 model, view, projection;
 uniform uint colourmode;
 
+
 // Output the vertex colour - to be rasterized into pixel fragments
 out vec4 fcolour;
 vec3 light_dir = vec3(0.0, 0.0, 10.0);
@@ -48,6 +49,6 @@ void main()
 	gl_Position = projection * view * model * position_h;
 
 	// Output the texture coordinates with no modifications
-	ftexcoord = texcoord;
+	ftexcoord =  texcoord;
 }
 
