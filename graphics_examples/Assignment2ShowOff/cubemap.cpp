@@ -38,12 +38,13 @@ inline GLuint loadCubemap(std::vector<std::string> faces)
 
 void Cubemap::initTexture()
 {
-    
 }
 
-void Cubemap::init(ShaderProgram &shader)
+void Cubemap::init(ShaderProgram *shader)
 {
 	skyboxShader = shader;
+
+    skyboxVAO = 0;
 
     float skyboxVertices[] = {
         // positions          
@@ -90,14 +91,18 @@ void Cubemap::init(ShaderProgram &shader)
          1.0f, -1.0f,  1.0f
     };
 
+    // To increase the size of the vertex because im too lazy to re-type them.
+    for (int i = 0 ; i<( sizeof(skyboxVertices) / sizeof(float)); i++) 
+    {
+        skyboxVertices[i] *= 50.f;
+    }
+
     // skybox VAO
-    glGenVertexArrays(1, &skyboxVAO);
-    glGenBuffers(1, &skyboxVBO);
-    glBindVertexArray(skyboxVAO);
+    glGenBuffers(1, & skyboxVBO);
     glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), skyboxVertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 
 	std::vector<std::string> facePaths =
 	{
@@ -110,28 +115,27 @@ void Cubemap::init(ShaderProgram &shader)
 	};
 
     textureId = loadCubemap(facePaths);
-
-    skyboxShader.use();
-    skyboxShader.passInt("skybox",0);
+    skyboxShader->passInt("skybox",0);
 }
 
 
 void Cubemap::draw(glm::mat4 &view, glm::mat4 &projection)
 {
-    //glDepthMask(GL_FALSE);
+    skyboxShader->use();
     glDepthFunc(GL_LEQUAL);
-    skyboxShader.use();
     
-    glm::mat4 v = glm::mat4(glm::mat3(view));
-    skyboxShader.passMat4("view", v);
-    skyboxShader.passMat4("projection", projection);
+    glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+    glEnableVertexAttribArray(skyboxVAO);
+    glVertexAttribPointer(skyboxVAO, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-    glBindVertexArray(skyboxVAO);
+    glm::mat4 v = glm::mat4(glm::mat3(view));
+    skyboxShader->passMat4("view", v);
+    skyboxShader->passMat4("projection", projection);
+
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
     glDrawArrays(GL_TRIANGLES, 0, 36);
-    //glDepthMask(GL_TRUE);
-    glBindVertexArray(0);
-    glDepthFunc(GL_LESS);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
+    glDepthFunc(GL_LESS);
 }

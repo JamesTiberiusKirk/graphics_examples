@@ -28,9 +28,7 @@ void main() {
 
 	vec4 position_h = vec4(position, 1.0);
 
-	//fcolour = vec4(colour, 1.0)*ambient_colour;
 	fcolour = ambient_colour;
-	//fcolour = vec4(1);
 
 	/*TRANSFORMING AND NORMALISING THE NORMAL AND LIGHT DIRECTION*/
 	// define the modelview transformation

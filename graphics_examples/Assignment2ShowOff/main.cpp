@@ -42,8 +42,8 @@ Texture* terrainTex;
 Terrain* terrain;
 //SkyBox* skyBox;
 ShaderProgram* mainProgram;
-//ShaderProgram* skyboxShader;
-//Cubemap cubemap;
+ShaderProgram* skyboxShader;
+Cubemap cubemap;
 Texture* sunTex;
 Sphere* sun;
 Texture* airplaneTex;
@@ -94,13 +94,11 @@ void init(GLWrapper* glw)
 	//skyBox = new SkyBox( skyBoxTextureFilePaths,
 	//	"shaders\\skybox\\skybox.vert", 
 	//	"shaders\\skybox\\skybox.frag");
-	//ShaderProgram skyBoxProgram = ShaderProgram("shaders\\skybox\\skybox.vert", 
-	//	"shaders\\skybox\\skybox.frag");
-	//skyBox = new SkyBox();
+		//skyBox = new SkyBox();
 	//skyBox->init(skyBoxProgram, skyBoxTextureFilePaths,
 	//	"shaders\\skybox\\skybox.vert", 
 	//	"shaders\\skybox\\skybox.frag");
-	//cubemap.init(skyBoxProgram);
+	cubemap.init(skyboxShader);
 	
 
 
@@ -155,7 +153,6 @@ void draw() {
 	//mainProgram->passVec3("object_colour", glm::vec3(1.0, 1.0, 1.0));
 
 	mainProgram->passVec4("specular_colour", glm::vec4(0.0, 1.0, 1.0,1.0));
-	//mainProgram->passVec4("ambient_colour", glm::vec4(1.0, 1.0, 1.0,1.0));
 	mainProgram->passVec4("ambient_colour", glm::vec4(0.2));
 
 	std::stack<glm::mat4> model;
@@ -189,7 +186,6 @@ void draw() {
 
 	model.push(model.top());
 	{
-
 		glm::vec3 sunTranlsation = glm::vec3(-5, 5, -5);
 		model.top() = glm::translate(model.top(), sunTranlsation);
 		mainProgram->passMat4("model", model.top());
@@ -210,11 +206,12 @@ void draw() {
 
 	// ------------------- Sky Box ------------------------
 	//skyBox->draw(view, projection);
-	//cubemap.draw(view,projection);
-	// ----------------------------------------------------
+	cubemap.draw(view,projection);
 
 	//glUseProgram(0);
+	mainProgram->use();
 	glDisableVertexAttribArray(0);
+	// ----------------------------------------------------
 }
 
 /* Window resize handler. */
@@ -289,6 +286,8 @@ int main(void) {
 	GLWrapper* glw = new GLWrapper(1920, 1080, "Assignemt1");
 	//mainProgram = new ShaderProgram("shaders\\main.vert","shaders\\main.frag");
 	mainProgram = new ShaderProgram("shaders\\shader.vert","shaders\\shader.frag");
+
+	skyboxShader = new ShaderProgram("shaders\\cubemap.vert","shaders\\cubemap.frag");
 
 	if (!ogl_LoadFunctions())
 	{

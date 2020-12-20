@@ -14,12 +14,12 @@ private:
 	void initTexture();
 
 public:
-	ShaderProgram skyboxShader;
+	ShaderProgram *skyboxShader;
 	GLuint textureId;
 
 	Cubemap() {};
 
-	void init(ShaderProgram &shader);
+	void init(ShaderProgram *shader);
 	void draw(glm::mat4 &view, glm::mat4 &projection);
 };
 

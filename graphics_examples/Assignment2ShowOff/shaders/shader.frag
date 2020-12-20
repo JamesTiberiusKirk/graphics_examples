@@ -7,7 +7,6 @@ in vec3 fV, fnormal, f_lightdir;
 
 vec3 global_ambient = vec3(0.05, 0.05, 0.05);
 
-
 uniform vec4 specular_colour;
 //uniform float shininess;
 float shininess = 8.0;
