@@ -72,7 +72,7 @@ Skybox::Skybox(std::vector<std::string> fp, const char* vertPath, const char* fr
     // Initialising the texture faces.
     faces = new CubemapTexture(facePaths);
 
-    skyboxShader->passInt("skybox",0);
+    skyboxShader->toUniform("skybox",0);
 
 };
 
@@ -93,8 +93,8 @@ void Skybox::draw(glm::mat4 &view, glm::mat4 &projection)
     glm::mat4 v = glm::mat4(glm::mat3(view)); 
 
     // Pass view and projection to the shader.
-    skyboxShader->passMat4("view", v);
-    skyboxShader->passMat4("projection", projection);
+    skyboxShader->toUniform("view", v);
+    skyboxShader->toUniform("projection", projection);
 
     // Bind the texture and draw the cube.
     glActiveTexture(GL_TEXTURE0);

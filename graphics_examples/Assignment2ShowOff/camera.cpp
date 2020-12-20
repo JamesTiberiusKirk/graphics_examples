@@ -11,6 +11,7 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, GLfloat nyaw, GLfloat npitch)
 	updateVecs();
 }
 
+
 /* For WASD keys. */
 void Camera::processKey(CameraMovement type, GLfloat deltaTime)
 {

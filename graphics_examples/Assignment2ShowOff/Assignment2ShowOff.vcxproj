@@ -152,10 +152,10 @@
     <ClCompile Include="wrapper_glfw.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\cubemap.frag" />
-    <None Include="shaders\cubemap.vert" />
     <None Include="shaders\main.frag" />
     <None Include="shaders\main.vert" />
+    <None Include="shaders\skybox\cubemap.frag" />
+    <None Include="shaders\skybox\cubemap.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cube_tex.h" />

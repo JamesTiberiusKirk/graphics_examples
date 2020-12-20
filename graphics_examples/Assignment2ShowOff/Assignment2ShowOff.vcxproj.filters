@@ -47,16 +47,16 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\cubemap.frag">
-      <Filter>Source Files\shaders</Filter>
-    </None>
-    <None Include="shaders\cubemap.vert">
-      <Filter>Source Files\shaders</Filter>
-    </None>
     <None Include="shaders\main.vert">
       <Filter>Source Files\shaders</Filter>
     </None>
     <None Include="shaders\main.frag">
+      <Filter>Source Files\shaders</Filter>
+    </None>
+    <None Include="shaders\skybox\cubemap.frag">
+      <Filter>Source Files\shaders</Filter>
+    </None>
+    <None Include="shaders\skybox\cubemap.vert">
       <Filter>Source Files\shaders</Filter>
     </None>
   </ItemGroup>

@@ -172,15 +172,15 @@ void draw() {
 	mainProgram->use();
 
 	// Pass some deafaults to the shader
-	mainProgram->passVec4("specular_colour", glm::vec4(0.0, 1.0, 1.0,1.0));
-	mainProgram->passVec4("ambient_colour", glm::vec4(0.2));
+	mainProgram->toUniform("specular_colour", glm::vec4(0.0, 1.0, 1.0,1.0));
+	mainProgram->toUniform("ambient_colour", glm::vec4(0.2));
 
 	// ------------------ Setting up camera -------------------
 
 	glm::mat4 view = cam.getViewMatrix();
 	glm::mat4 projection = glm::perspective(glm::radians(cam.zoom), aspectRatio, 0.1f, 100.0f);
-	mainProgram->passMat4("view", view);
-	mainProgram->passMat4("projection", projection);
+	mainProgram->toUniform("view", view);
+	mainProgram->toUniform("projection", projection);
 
 	// ------------------- Tralslations -------------------
 
@@ -190,7 +190,7 @@ void draw() {
 	model.push(glm::mat4(1.0f));
 
 	//Translations which apply to all of out objects
-	mainProgram->passMat4("model", model.top());
+	mainProgram->toUniform("model", model.top());
 
 	// For drawing terrain
 	terrainTex->bindTexture();
@@ -205,7 +205,7 @@ void draw() {
 		model.top() = glm::scale(model.top(), glm::vec3(0.08f, 0.08f, 0.08f));
 		model.top() = glm::rotate(model.top(), glm::radians(20.0f), glm::vec3(0,0,-1));
 		
-		mainProgram->passMat4("model", model.top());
+		mainProgram->toUniform("model", model.top());
 
 		airplaneTex->bindTexture();
 		airplane->drawObject(0);
@@ -218,7 +218,7 @@ void draw() {
 	{
 		glm::vec3 sunTranlsation = glm::vec3(-5, 5, -5);
 		model.top() = glm::translate(model.top(), sunTranlsation);
-		mainProgram->passMat4("model", model.top());
+		mainProgram->toUniform("model", model.top());
 
 		sunTex->bindTexture();
 		sun->drawSphere(0);
