@@ -49,8 +49,11 @@ const char* MAIN_FRAG_PATH = "shaders\\main.frag";
 const char* OBJ_AIRPLANE = "obj\\paper-airplane-exp.obj"; 
 
 
-/* --------------------- */
+/* ----- OTHER CONSTANTS -- */
 
+/* ------------------------ */
+
+int view = 0;
 GLfloat aspectRatio;
 
 /* OpenGL specific variables */
@@ -62,14 +65,16 @@ GLfloat modelScale;
 
 Texture* terrainTex;
 Terrain* terrain;
+
 ShaderProgram* mainProgram;
 Skybox* cubemap;
 Texture* sunTex;
 Sphere* sun;
+
 Texture* airplaneTex;
 TinyObjLoader* airplane;
 GLfloat airplaneFlight = 0;
-const GLfloat airplaneSpeed = 0.8f;
+GLfloat airplaneSpeed = 0.8f;
 
 /* For time. */
 GLfloat deltaTime = 0.0f;
@@ -80,6 +85,29 @@ Camera cam(glm::vec3(0.0f, 3.0f, 8.0f));
 GLfloat lastX = 1920.f / 2.f;
 GLfloat lastY = 1080.f / 2.f;
 bool firstMouse = true;
+
+/* To print help */
+void printHelp()
+{
+	char msg[] = "\
+	~~~~~~~~~~~~~~~~~~~~ KEY BINDINGS ~~~~~~~~~~~~~~~~~~~~~~\n \
+	ESC:\t\t to exit the application  \n \
+	\"W\"\t\t to move forward\n\
+	\"S\"\t\t to move backwords\n\
+	\"D\"\t\t to move right\n\
+	\"A\"\t\t to move left\n\
+	SPACE\t\t to move upwards\n\
+	LEFT CTRL\t to move downwards\n\
+	RIGHT ARROW\t to look right\n\
+	LEFT ATRROW\t to look left\n\
+	UP ARROW\t to look up\n\
+	DOWN ARROW\t to look down\n\
+	\"=\"\t\t to speed up the animation\n\
+	\"-\"\t\t to slow down the animation\n\
+	\"C\"\t\t to change the position of the camera\n\
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+	std::cout << msg << std::endl;
+}
 
 /* To initialise defaults for the terrain. */
 void initTerrain()
@@ -223,12 +251,54 @@ void resiseHandler(GLFWwindow* window, int w, int h) {
 	aspectRatio = float(w) / float(h);
 }
 
+/* To change airplane speed. */
+void changeAirplaneSpeed(GLfloat change)
+{
+	if ( (change < 0 && airplaneSpeed <= 0.4) || (change > 0 && airplaneSpeed >= 3.0) )
+		return;
+	airplaneSpeed += change;
+}
+
+
+/* Cycles through camera views. */
+void changeView()
+{
+	view++;
+	if (view >= 3)
+		view = 0;
+
+	switch (view)
+	{
+	case 0:
+		cam = Camera(glm::vec3(0,20,0),glm::vec3(0,1,0),-90,-90);
+		break;
+	case 1:
+		cam = Camera(glm::vec3(6),glm::vec3(0,1,0),-120,-25);
+		break;
+	case 2:
+		cam = Camera(glm::vec3(15,1,0),glm::vec3(0,1,0),-180,0);
+		break;
+	case 3:
+		cam = Camera(glm::vec3(0.0f, 3.0f, 8.0f));
+			break;
+	}
+
+}
 
 /* Keyboard input handler. */
 void keyHandler(GLFWwindow* window, int key, int s, int action, int mods)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+
+
+	if (key == 'C' && action != GLFW_PRESS)
+		changeView();
+
+	if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS)
+		changeAirplaneSpeed(0.4);
+	if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS)
+		changeAirplaneSpeed(-0.4);
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		cam.processKey(FORWARD, deltaTime);
@@ -284,6 +354,8 @@ void scrollHandler(GLFWwindow* window, double xoffset, double yoffset)
 
 /* Entry point. */
 int main(void) {
+	printHelp();
+
 	GLWrapper* glw = new GLWrapper(1920, 1080, "Assignemt1");
 	mainProgram = new ShaderProgram(MAIN_VERT_PATH, MAIN_FRAG_PATH);
 
