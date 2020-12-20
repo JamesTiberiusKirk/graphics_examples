@@ -1,30 +1,25 @@
 #pragma once
-
 #include <vector>
-#include <string>
-
 #include "common.h"
-#include "texture.h"
-#include "config.h"
-#include "camera.h"
 #include "program.h"
+#include "texture.h"
 
-class SkyBox 
+/* Cubemap class for the skybox. */
+class Skybox
 {
+private:
+	CubemapTexture* faces;
+	std::vector<std::string> facePaths;
+	GLuint skyboxVAO;
+    GLuint skyboxVBO;
+
 public:
-	GLuint viewId, projectionId;
-	CubemapTexture *skyTex;
-	Camera *cam;
-	ShaderProgram program;
-	GLuint vao, vbo;
-	GLuint texId;
+	ShaderProgram *skyboxShader;
 
-	SkyBox();
-	~SkyBox();
+	/* Constructor for initialisation. */
+	Skybox(std::vector<std::string> fp, const char* vertPath, const char* fragPath);
 
-	void init(ShaderProgram &p, const std::vector<std::string> textureFilesPath,
-		const char* vertShaderPath,
-		const char* fragShaderPath);
+	/* Called every frame. */
 	void draw(glm::mat4 &view, glm::mat4 &projection);
 };
 

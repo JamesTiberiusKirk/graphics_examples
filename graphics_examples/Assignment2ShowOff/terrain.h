@@ -1,8 +1,4 @@
 #pragma once
-/* terrain_object.h
-   Example class to show how to create and render a height map
-   Iain Martin November 2018
-*/
 
 #pragma once
 
@@ -10,6 +6,7 @@
 #include <vector>
 #include "common.h"
 
+/* Refactored terrain class. */
 class Terrain
 {
 public:

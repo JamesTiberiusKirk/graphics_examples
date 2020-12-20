@@ -59,7 +59,7 @@ void Camera::processMouseMovement(float xoffset, GLfloat yoffset)
 	if (pitch < -89.0f)
 		pitch = -89.0f;
 
-	// update Front, Right and Up Vectors using the updated Euler angles
+	// Update front, right and up vectors using the updated Euler angle.
 	updateVecs();
 }
 
@@ -75,15 +75,15 @@ void Camera::processMouseScroll(float yoffset)
 
 void Camera::updateVecs()
 {
-	// calculate the new Front vector
+	// Calculate the new Front vector.
 	glm::vec3 f;
 	f.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 	f.y = sin(glm::radians(pitch));
 	f.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 	front = glm::normalize(f);
 
-	// re-calculate the Right and Up vector
-	right = glm::normalize(glm::cross(front, worldUp));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+	// Re-calculate the right and up vector.
+	right = glm::normalize(glm::cross(front, worldUp)); 
 	up = glm::normalize(glm::cross(right, front));
 }
 

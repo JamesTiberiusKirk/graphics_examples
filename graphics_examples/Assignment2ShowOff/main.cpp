@@ -19,13 +19,35 @@ if you prefer */
 #include "wrapper_glfw.h"
 #include "terrain.h"
 #include "camera.h"
-//#include "skybox.h"
 #include "program.h"
 #include "texture.h"
 #include "sphere_tex.h"
-#include "cubemap.h"
+#include "skybox.h"
 
-#include "config.h"
+/* ------- PATHS -------- */
+
+std::vector<std::string> CUBEMAP_FACE_PATHS =
+{
+	"textures\\skybox\\right.jpg",
+	"textures\\skybox\\left.jpg",
+	"textures\\skybox\\top.jpg",
+	"textures\\skybox\\bottom.jpg",
+	"textures\\skybox\\front.jpg",
+	"textures\\skybox\\back.jpg"
+};
+
+const char* TEXT_GRASS = "textures\\grass.jpg";
+const char* TEXT_SUN = "textures\\sun.jpg";
+const char* TEXT_PAPER = "textures\\crumpled-paper.jpg";
+
+const char* CUBEMAP_VERT_PATH = "shaders\\skybox\\cubemap.vert";
+const char* CUBEMAP_FRAG_PATH = "shaders\\skybox\\cubemap.frag";
+
+const char* MAIN_VERT_PATH = "shaders\\main.vert";
+const char* MAIN_FRAG_PATH = "shaders\\main.frag";
+
+const char* OBJ_AIRPLANE = "obj\\paper-airplane-exp.obj"; 
+
 
 /* --------------------- */
 
@@ -40,10 +62,8 @@ GLfloat modelScale;
 
 Texture* terrainTex;
 Terrain* terrain;
-//SkyBox* skyBox;
 ShaderProgram* mainProgram;
-ShaderProgram* skyboxShader;
-Cubemap cubemap;
+Skybox* cubemap;
 Texture* sunTex;
 Sphere* sun;
 Texture* airplaneTex;
@@ -61,23 +81,13 @@ GLfloat lastX = 1920.f / 2.f;
 GLfloat lastY = 1080.f / 2.f;
 bool firstMouse = true;
 
-std::vector<std::string> skyBoxTextureFilePaths =
-{
-	"textures\\skybox\\right.jpg",
-	"textures\\skybox\\left.jpg",
-	"textures\\skybox\\top.jpg",
-	"textures\\skybox\\bottom.jpg",
-	"textures\\skybox\\front.jpg",
-	"textures\\skybox\\back.jpg"
-};
-
+/* To initialise defaults for the terrain. */
 void initTerrain()
 {
 	terrain = new Terrain(3.0f, 1.0f, 6.0f);
 	terrain->createTerrain(600.f, 600.f, 12.f, 12.f);
 	terrain->defineSeaLevel(-5);
 	terrain->setColourBasedOnHeight();
-	//terrain->setColour(glm::vec3(0, 1, 1));
 	terrain->createObject();
 }
 
@@ -91,42 +101,35 @@ void init(GLWrapper* glw)
 	glBindVertexArray(vao);
 
 	// For initialising the skybox
-	//skyBox = new SkyBox( skyBoxTextureFilePaths,
-	//	"shaders\\skybox\\skybox.vert", 
-	//	"shaders\\skybox\\skybox.frag");
-		//skyBox = new SkyBox();
-	//skyBox->init(skyBoxProgram, skyBoxTextureFilePaths,
-	//	"shaders\\skybox\\skybox.vert", 
-	//	"shaders\\skybox\\skybox.frag");
-	cubemap.init(skyboxShader);
+	cubemap = new Skybox(CUBEMAP_FACE_PATHS,
+		CUBEMAP_VERT_PATH,
+		CUBEMAP_FRAG_PATH);
 	
-
-
 	// For creating terrain
-	terrainTex = new Texture("textures\\grass.jpg");
+	terrainTex = new Texture(TEXT_GRASS);
 	initTerrain();
 
 	// Fon the sun
-	sunTex = new Texture("textures\\sun.jpg");
+	sunTex = new Texture(TEXT_SUN);
 	sun = new Sphere(true);
 	sun->makeSphere(65,65);
 
 
 	// For the airplane
-	//airplaneTex = new Texture("textures\\crumpled-paper.jpg");
+	airplaneTex = new Texture(TEXT_PAPER);
 	airplane = new TinyObjLoader();
-	airplane->load_obj("obj\\paper-airplane-exp.obj");
+	airplane->load_obj(OBJ_AIRPLANE);
 }
 
 /* Function called for drawing every frame. */
 void draw() {
-	// per-frame time logic
-	// --------------------
+
+	// ------------------- Basic setup -------------------
+
+	// Logic to get time difference
 	GLfloat currentFrame = glfwGetTime();
 	deltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
-
-	// ------------------- Basic setup -------------------
 
 	// Background colour
 	glClearColor(0.2f, 0.8f, 1.0f, 1.0f);
@@ -140,6 +143,10 @@ void draw() {
 	// Define the shader program to be used
 	mainProgram->use();
 
+	// Pass some deafaults to the shader
+	mainProgram->passVec4("specular_colour", glm::vec4(0.0, 1.0, 1.0,1.0));
+	mainProgram->passVec4("ambient_colour", glm::vec4(0.2));
+
 	// ------------------ Setting up camera -------------------
 
 	glm::mat4 view = cam.getViewMatrix();
@@ -148,12 +155,6 @@ void draw() {
 	mainProgram->passMat4("projection", projection);
 
 	// ------------------- Tralslations -------------------
-
-	//mainProgram->passVec3("light_colour",glm::vec3(1.0,1.0,1.0));
-	//mainProgram->passVec3("object_colour", glm::vec3(1.0, 1.0, 1.0));
-
-	mainProgram->passVec4("specular_colour", glm::vec4(0.0, 1.0, 1.0,1.0));
-	mainProgram->passVec4("ambient_colour", glm::vec4(0.2));
 
 	std::stack<glm::mat4> model;
 
@@ -168,6 +169,7 @@ void draw() {
 	terrain->drawObject(drawmode);
 	terrainTex->unbindTexture();
 
+	// Fir the airplane
 	model.push(model.top());
 	{
 		model.top() = glm::rotate(model.top(), glm::radians(airplaneFlight), glm::vec3(0,1,0));
@@ -177,19 +179,18 @@ void draw() {
 		
 		mainProgram->passMat4("model", model.top());
 
-		//mainProgram->passInt("tex_mode", 0);
-		//airplaneTex->bindTexture();
+		airplaneTex->bindTexture();
 		airplane->drawObject(0);
-		//airplaneTex->unbindTexture();
+		airplaneTex->unbindTexture();
 	}
 	model.pop();
 
+	// For the sun
 	model.push(model.top());
 	{
 		glm::vec3 sunTranlsation = glm::vec3(-5, 5, -5);
 		model.top() = glm::translate(model.top(), sunTranlsation);
 		mainProgram->passMat4("model", model.top());
-		//mainProgram->passInt("tex_mode", 1);
 
 		sunTex->bindTexture();
 		sun->drawSphere(0);
@@ -200,18 +201,18 @@ void draw() {
 
 	glUseProgram(0);
 
-
+	// ------------------- Plane Animation ----------------
 	if (airplaneFlight == 360.0f) airplaneFlight = 0;
 	airplaneFlight -= airplaneSpeed;
+	// ----------------------------------------------------
+
 
 	// ------------------- Sky Box ------------------------
-	//skyBox->draw(view, projection);
-	cubemap.draw(view,projection);
+	cubemap->draw(view,projection);
+	// ----------------------------------------------------
 
-	//glUseProgram(0);
 	mainProgram->use();
 	glDisableVertexAttribArray(0);
-	// ----------------------------------------------------
 }
 
 /* Window resize handler. */
@@ -284,10 +285,7 @@ void scrollHandler(GLFWwindow* window, double xoffset, double yoffset)
 /* Entry point. */
 int main(void) {
 	GLWrapper* glw = new GLWrapper(1920, 1080, "Assignemt1");
-	//mainProgram = new ShaderProgram("shaders\\main.vert","shaders\\main.frag");
-	mainProgram = new ShaderProgram("shaders\\shader.vert","shaders\\shader.frag");
-
-	skyboxShader = new ShaderProgram("shaders\\cubemap.vert","shaders\\cubemap.frag");
+	mainProgram = new ShaderProgram(MAIN_VERT_PATH, MAIN_FRAG_PATH);
 
 	if (!ogl_LoadFunctions())
 	{

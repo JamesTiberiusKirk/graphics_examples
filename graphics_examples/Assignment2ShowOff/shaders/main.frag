@@ -1,48 +1,41 @@
-// Minimal fragment shader
+#version 420
 
-#version 400 core
+/* Some defaults. */
+vec3 global_ambient = vec3(0.05, 0.05, 0.05);
+float shininess = 8.0;
 
-in vec3 frag_positon;
-in vec3 frag_normal;
-in vec2 frag_texcoord;
+/* In vars from vert. */
+in vec4 fcolour;
+in float fattenuation;
+in vec2 ftexcoords;
+in vec3 fV, fnormal, f_lightdir;
 
-
-out vec4 outputColor;
-
-uniform vec3 light_pos;
-uniform vec3 light_colour;
-uniform vec3 object_colour;
-uniform int tex_mode;
-
+/* Uniforms. */
 uniform sampler2D tex1;
+uniform vec4 specular_colour;
+
+out vec4 output_colour;
 
 void main()
 {
-	// Ambient
-	float ambient_strength = 0.5;
-	vec3 ambient = ambient_strength * light_pos;
+	vec3 emissive = vec3(0);
 
-	// Diffuse
-	vec3 normal = normalize(frag_normal);
-	vec3 light_dir = normalize(light_pos - frag_positon);
-	float diffuse_strength = max(dot(normal,light_dir), 0.0);
-	vec3 diffuse = diffuse_strength * light_colour;
+	// Calculating diffuse lighting
+	vec4 diffuse_colour = vec4(0.6,0.6,0.6,1.0);
+	float NL = max(dot(fnormal, f_lightdir),0);
+	vec4 diffuse_lighting = NL * diffuse_colour;
 
-	// Texture
-	vec4 texcolour = texture(tex1, 2* frag_texcoord);
+	// Calculating specular lighting
+	vec3 R = reflect(-f_lightdir, fnormal);
+	vec3 specular_lighting = pow(max(dot(R, fV), 0.0), shininess) * specular_colour.xyz;
 
-	// Combine
-	vec4 shader_colour = texcolour * vec4(ambient + diffuse,1.0);
-	// vec3 result = (ambient + (texcolour * diffuse)) /** object_colour*/;
-	// if(tex_mode== 0)
-	// {
-	// 	outputColor =  texcolour;
-	// }
-	// else if (tex_mode == 1)
-	// {
-	// 	outputColor = vec4(result,1.0) /** texcolour*/;
-	// }
+		
+	// Calculating the texture colour.
+	vec4 texcolour = texture(tex1, ftexcoords);
 
-	outputColor =  shader_colour;
+	// Mixting all the colours and lightings.
+	vec4 shadedcolour = texcolour*(fcolour + diffuse_lighting) + vec4(specular_lighting, 1.0);
 
+	// Passing oputput colour to frame buffer.
+	output_colour = (fattenuation)*(shadedcolour) + vec4(emissive, 1.0) + vec4(global_ambient, 1.0);
 }

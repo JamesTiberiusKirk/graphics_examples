@@ -4,7 +4,6 @@
 
 #include "common.h"
 #include "wrapper_glfw.h"
-#include "config.h"
 #include "program.h"
 
 /* Camera movement options. */

@@ -16,9 +16,6 @@
     <Filter Include="Source Files\shaders">
       <UniqueIdentifier>{ab67438d-6674-4fe6-a5ec-3c913d9cc6d1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\shaders\skybox">
-      <UniqueIdentifier>{961cddd2-233f-45ff-915e-20b9359b9b18}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -36,9 +33,6 @@
     <ClCompile Include="terrain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="skybox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -48,39 +42,21 @@
     <ClCompile Include="sphere_tex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cubemap.cpp">
+    <ClCompile Include="skybox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\skybox\skybox.frag">
-      <Filter>Source Files\shaders\skybox</Filter>
-    </None>
-    <None Include="shaders\skybox\skybox.vert">
-      <Filter>Source Files\shaders\skybox</Filter>
-    </None>
     <None Include="shaders\cubemap.frag">
       <Filter>Source Files\shaders</Filter>
     </None>
     <None Include="shaders\cubemap.vert">
       <Filter>Source Files\shaders</Filter>
     </None>
-    <None Include="shaders\main-old.vert">
-      <Filter>Source Files\shaders</Filter>
-    </None>
-    <None Include="shaders\main-old.frag">
-      <Filter>Source Files\shaders</Filter>
-    </None>
-    <None Include="shaders\main.frag">
-      <Filter>Source Files\shaders</Filter>
-    </None>
     <None Include="shaders\main.vert">
       <Filter>Source Files\shaders</Filter>
     </None>
-    <None Include="shaders\shader.frag">
-      <Filter>Source Files\shaders</Filter>
-    </None>
-    <None Include="shaders\shader.vert">
+    <None Include="shaders\main.frag">
       <Filter>Source Files\shaders</Filter>
     </None>
   </ItemGroup>
@@ -103,25 +79,16 @@
     <ClInclude Include="texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="skybox.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="program.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="wrapper_glfw.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="config.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="globals.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="sphere_tex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="cubemap.h">
+    <ClInclude Include="skybox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

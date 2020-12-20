@@ -6,6 +6,9 @@
 #include "stb_image.h"
 #include "common.h"
 
+/*
+ * Class for texturing objects.
+ */
 class Texture
 {
 public:
@@ -35,6 +38,9 @@ public:
 };
 
 
+/* 
+ * Class for specifically loading the 6 faces of a cube map.
+ */
 class CubemapTexture
 {
 public:
@@ -46,8 +52,6 @@ public:
 	 */
 	CubemapTexture(std::vector<std::string> filePaths);
 		
-	void init(std::vector<std::string> filepaths);
-
 	/* 
 	 * Binds the texture in opengl.
 	 */

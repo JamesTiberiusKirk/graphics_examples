@@ -11,7 +11,7 @@ inline std::string readFile(const char *filePath)
 {
 	std::string content;
 	std::ifstream fileStream(filePath, std::ios::in);
-	std::cout << "Reading " << filePath << " shader." << std::endl;
+	std::cout << "Loading " << filePath << " shader." << std::endl;
 
 	if (!fileStream.is_open())
 	{
@@ -74,7 +74,6 @@ GLuint ShaderProgram::loadShaderFromFile(const char* vertPath, const char* fragP
 	vertShader = buildShader(GL_VERTEX_SHADER, vertShaderStr);
 	fragShader = buildShader(GL_FRAGMENT_SHADER, fragShaderStr);
 
-    std::cout << "Error Code " << glGetError() << " from program||| " << uid << std::endl;
 
 	std::cout << "Linking program" << std::endl;
 	GLuint program = glCreateProgram();
@@ -82,7 +81,6 @@ GLuint ShaderProgram::loadShaderFromFile(const char* vertPath, const char* fragP
 	glAttachShader(program, fragShader);
 	glLinkProgram(program);
 
-    std::cout << "Error Code " << glGetError() << " from program||| " << uid << std::endl;
 
 	glGetProgramiv(program, GL_LINK_STATUS, &result);
 	glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
