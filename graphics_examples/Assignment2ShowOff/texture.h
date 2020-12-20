@@ -46,6 +46,8 @@ public:
 	 */
 	CubemapTexture(std::vector<std::string> filePaths);
 		
+	void init(std::vector<std::string> filepaths);
+
 	/* 
 	 * Binds the texture in opengl.
 	 */

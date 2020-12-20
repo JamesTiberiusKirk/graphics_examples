@@ -142,6 +142,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="cubemap.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="program.cpp" />
     <ClCompile Include="skybox.cpp" />
@@ -152,10 +153,14 @@
     <ClCompile Include="wrapper_glfw.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\cubemap.frag" />
+    <None Include="shaders\cubemap.vert" />
+    <None Include="shaders\main-old.frag" />
     <None Include="shaders\main.frag" />
-    <None Include="shaders\main.old.frag" />
-    <None Include="shaders\main.old.vert" />
     <None Include="shaders\main.vert" />
+    <None Include="shaders\main-old.vert" />
+    <None Include="shaders\shader.frag" />
+    <None Include="shaders\shader.vert" />
     <None Include="shaders\skybox\skybox.frag" />
     <None Include="shaders\skybox\skybox.vert" />
   </ItemGroup>
@@ -164,6 +169,7 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="common.h" />
     <ClInclude Include="config.h" />
+    <ClInclude Include="cubemap.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="program.h" />
     <ClInclude Include="skybox.h" />

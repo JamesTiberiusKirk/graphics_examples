@@ -8,7 +8,8 @@
 #include "program.h"
 
 /* Camera movement options. */
-enum CameraMovement {
+enum CameraMovement 
+{
     FORWARD,
     BACKWARD,
     LEFT,
@@ -17,11 +18,21 @@ enum CameraMovement {
     DOWN
 };
 
+/* Camera look change options. */
+enum CameraLook 
+{
+    LOOK_UP,
+    LOOK_DOWN,
+    LOOK_RIGHT,
+    LOOK_LEFT
+};
+
 /* Defaults. */
 const GLfloat YAW = -90.0f;
 const GLfloat PITCH = 0.0f;
 const GLfloat SPEED = 3.0f;
 const GLfloat SENSITIVITY = 0.1f;
+const GLfloat ARROW_LOOK_SENSITIVITY = 50.0f * SENSITIVITY;
 const GLfloat ZOOM = 45.0f;
 
 /* Class for doing all of the camera calculations. */
@@ -40,11 +51,9 @@ private:
     GLfloat yaw;
     GLfloat pitch;
 
-    GLfloat movementSpeed;
-    GLfloat mouseSensitivity;
-
     /* Calculate the eulers angles for FPS movement. */
     void updateVecs();
+
 public:
 
     GLfloat zoom;
@@ -62,8 +71,9 @@ public:
     }
 
     /* Input handlers*/
-    void processKeyboard(CameraMovement direction, GLfloat deltaTime);
-    void processMouseMovement(float xoffset, GLfloat yoffset, GLboolean constrainPitch = true);
+    void processKey(CameraMovement type, GLfloat deltaTime);
+    void processKey(CameraLook type, GLfloat deltaTime);
+    void processMouseMovement(float xoffset, GLfloat yoffset);
     void processMouseScroll(float yoffset);
 
 };

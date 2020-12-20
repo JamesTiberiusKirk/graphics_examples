@@ -15,12 +15,16 @@ public:
 	GLuint viewId, projectionId;
 	CubemapTexture *skyTex;
 	Camera *cam;
-	ShaderProgram *program;
+	ShaderProgram program;
 	GLuint vao, vbo;
+	GLuint texId;
 
-	SkyBox(const  std::vector<std::string> textureFiles, const char* vertShaderPath, const char* fragShaderPath);
+	SkyBox();
 	~SkyBox();
 
-	void draw(glm::mat4 view, glm::mat4 projection);
+	void init(ShaderProgram &p, const std::vector<std::string> textureFilesPath,
+		const char* vertShaderPath,
+		const char* fragShaderPath);
+	void draw(glm::mat4 &view, glm::mat4 &projection);
 };
 

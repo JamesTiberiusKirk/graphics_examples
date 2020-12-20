@@ -13,6 +13,7 @@ public:
 	GLuint uid;
 
 	ShaderProgram(const char* vertPath, const char* fragPath);
+	ShaderProgram();
 	~ShaderProgram();
 
 	void use();
@@ -25,6 +26,11 @@ public:
 	void passVec4(const std::string& name, const glm::vec4& vec) const
 	{
 		glUniform4fv(glGetUniformLocation(uid, name.c_str()), 1, &vec[0]);
+	}
+
+	void passVec3(const std::string& name, const glm::vec3& vec) const
+	{
+		glUniform3fv(glGetUniformLocation(uid, name.c_str()), 1, &vec[0]);
 	}
 
 	void passInt(const std::string& name, int value) const

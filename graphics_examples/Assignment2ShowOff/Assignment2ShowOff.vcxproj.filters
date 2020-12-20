@@ -48,6 +48,9 @@
     <ClCompile Include="sphere_tex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cubemap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\skybox\skybox.frag">
@@ -56,16 +59,28 @@
     <None Include="shaders\skybox\skybox.vert">
       <Filter>Source Files\shaders\skybox</Filter>
     </None>
-    <None Include="shaders\main.old.frag">
+    <None Include="shaders\cubemap.frag">
+      <Filter>Source Files\shaders</Filter>
+    </None>
+    <None Include="shaders\cubemap.vert">
+      <Filter>Source Files\shaders</Filter>
+    </None>
+    <None Include="shaders\main-old.vert">
+      <Filter>Source Files\shaders</Filter>
+    </None>
+    <None Include="shaders\main-old.frag">
       <Filter>Source Files\shaders</Filter>
     </None>
     <None Include="shaders\main.frag">
       <Filter>Source Files\shaders</Filter>
     </None>
-    <None Include="shaders\main.old.vert">
+    <None Include="shaders\main.vert">
       <Filter>Source Files\shaders</Filter>
     </None>
-    <None Include="shaders\main.vert">
+    <None Include="shaders\shader.frag">
+      <Filter>Source Files\shaders</Filter>
+    </None>
+    <None Include="shaders\shader.vert">
       <Filter>Source Files\shaders</Filter>
     </None>
   </ItemGroup>
@@ -104,6 +119,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="sphere_tex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cubemap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

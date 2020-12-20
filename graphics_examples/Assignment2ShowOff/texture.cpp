@@ -54,3 +54,8 @@ CubemapTexture::CubemapTexture(std::vector<std::string> filepaths)
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 }
+
+void CubemapTexture::init(std::vector<std::string> filepaths)
+{
+
+}

@@ -2,8 +2,6 @@
 
 Camera::Camera(glm::vec3 position, glm::vec3 up, GLfloat nyaw, GLfloat npitch)
 	: front(glm::vec3(0.0f, 0.0f, -1.0f)),
-	movementSpeed(SPEED),
-	mouseSensitivity(SENSITIVITY),
 	zoom(ZOOM)
 {
 	pos = position;
@@ -13,39 +11,53 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, GLfloat nyaw, GLfloat npitch)
 	updateVecs();
 }
 
-void Camera::processKeyboard(CameraMovement direction, GLfloat deltaTime)
+/* For WASD keys. */
+void Camera::processKey(CameraMovement type, GLfloat deltaTime)
 {
-	GLfloat velocity = movementSpeed * deltaTime;
-	if (direction == FORWARD)
+	GLfloat velocity = SPEED * deltaTime;
+	if (type == FORWARD)
 		pos += front * velocity;
-	if (direction == BACKWARD)
+	if (type == BACKWARD)
 		pos -= front * velocity;
-	if (direction == LEFT)
+	if (type == LEFT)
 		pos -= right * velocity;
-	if (direction == RIGHT)
+	if (type == RIGHT)
 		pos += right * velocity;
-	if (direction == UP)
+	if (type == UP)
 		pos += up * velocity;
-	if (direction == DOWN)
+	if (type == DOWN)
 		pos += -up * velocity;
 }
 
-void Camera::processMouseMovement(float xoffset, GLfloat yoffset, GLboolean constrainPitch)
+/* For arrow keys; need to update cam verticies. */
+void Camera::processKey(CameraLook type, GLfloat deltaTime)
 {
-	xoffset *= mouseSensitivity;
-	yoffset *= mouseSensitivity;
+	GLfloat velocity = SPEED * deltaTime;
+	if (type == LOOK_UP)
+		processMouseMovement(0.f, ARROW_LOOK_SENSITIVITY);
+	if (type == LOOK_DOWN)
+		processMouseMovement(0.f, -ARROW_LOOK_SENSITIVITY);
+	if (type == LOOK_LEFT)
+		processMouseMovement(-ARROW_LOOK_SENSITIVITY, 0.f);
+	if (type == LOOK_RIGHT)
+		processMouseMovement(ARROW_LOOK_SENSITIVITY, 0.f);
+
+	updateVecs();
+}
+
+
+void Camera::processMouseMovement(float xoffset, GLfloat yoffset)
+{
+	xoffset *= SENSITIVITY;
+	yoffset *= SENSITIVITY;
 
 	yaw += xoffset;
 	pitch += yoffset;
 
-	// make sure that when pitch is out of bounds, screen doesn't get flipped
-	if (constrainPitch)
-	{
-		if (pitch > 89.0f)
-			pitch = 89.0f;
-		if (pitch < -89.0f)
-			pitch = -89.0f;
-	}
+	if (pitch > 89.0f)
+		pitch = 89.0f;
+	if (pitch < -89.0f)
+		pitch = -89.0f;
 
 	// update Front, Right and Up Vectors using the updated Euler angles
 	updateVecs();
