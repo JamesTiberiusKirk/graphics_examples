@@ -21,25 +21,25 @@ public:
 	void use();
 
 	/* To pass a mat4 to the shader. */
-	void passMat4(const std::string& name, const glm::mat4& mat) const
+	void toUniform(const std::string& name, const glm::mat4& mat) const
 	{
 		glUniformMatrix4fv(glGetUniformLocation(uid, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 	}
 
 	/* To pass a vec4 to the shader. */
-	void passVec4(const std::string& name, const glm::vec4& vec) const
+	void toUniform(const std::string& name, const glm::vec4& vec) const
 	{
 		glUniform4fv(glGetUniformLocation(uid, name.c_str()), 1, &vec[0]);
 	}
 
 	/* To pass a vec3 to the shader. */
-	void passVec3(const std::string& name, const glm::vec3& vec) const
+	void toUniform(const std::string& name, const glm::vec3& vec) const
 	{
 		glUniform3fv(glGetUniformLocation(uid, name.c_str()), 1, &vec[0]);
 	}
 
 	/* To pass an int to the shader. */
-	void passInt(const std::string& name, int value) const
+	void toUniform(const std::string& name, int value) const
 	{
 		glUniform1i(glGetUniformLocation(uid, name.c_str()), value);
 	}
